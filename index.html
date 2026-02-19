@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 영상 기획 플래너</title>
+<style>
+:root{
+  --pri:#6C5CE7;--pri-l:#A29BFE;--pri-bg:#F0EEFF;--pri-h:#5A4BD1;
+  --ok:#00B894;--warn:#FDCB6E;--err:#E17055;
+  --t1:#1A1A2E;--t2:#636E72;--t3:#B2BEC3;
+  --bg:#F8F9FE;--card:#FFF;--bdr:#E8E8F0;--chip:#F0F0F8;
+  --r:12px;--rs:8px;
+  --sh:0 2px 8px rgba(0,0,0,.06);--shm:0 4px 16px rgba(0,0,0,.1);
+  --tr:.3s cubic-bezier(.4,0,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;min-height:100vh;overflow-x:hidden}
+
+/* ── Progress ── */
+.prog{position:sticky;top:0;z-index:100;background:var(--card);border-bottom:1px solid var(--bdr);padding:14px 20px}
+.prog-in{max-width:740px;margin:0 auto;display:flex;align-items:center;gap:0}
+.prog-s{display:flex;align-items:center;gap:6px}
+.prog-dot{width:30px;height:30px;border-radius:50%;border:2px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--t3);background:var(--card);z-index:2;transition:all var(--tr);flex-shrink:0}
+.prog-dot.on{border-color:var(--pri);color:#fff;background:var(--pri)}
+.prog-dot.ok{border-color:var(--ok);color:#fff;background:var(--ok)}
+.prog-lbl{font-size:10px;color:var(--t3);white-space:nowrap}
+.prog-lbl.on{color:var(--pri);font-weight:600}
+.prog-lbl.ok{color:var(--ok)}
+.prog-line{flex:1;height:2px;background:var(--bdr);min-width:8px;margin:0 2px;transition:background var(--tr)}
+.prog-line.ok{background:var(--ok)}
+
+/* ── Main ── */
+.main{max-width:740px;margin:0 auto;padding:24px 20px 140px}
+.stp{display:none;animation:fu .4s ease}
+.stp.on{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.pg-t{font-size:22px;font-weight:800;margin-bottom:6px}
+.pg-s{font-size:14px;color:var(--t2);margin-bottom:24px;line-height:1.6}
+
+/* ── Question Groups ── */
+.qg{margin-bottom:24px}
+.ql{font-size:15px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ql .badge{font-size:11px;background:var(--pri-bg);color:var(--pri);padding:2px 8px;border-radius:10px;font-weight:600}
+.qh{font-size:12px;color:var(--t3);margin-top:-6px;margin-bottom:10px}
+
+/* ── Selection Cards ── */
+.sc{display:grid;gap:10px}
+.sc.c2{grid-template-columns:1fr 1fr}.sc.c3{grid-template-columns:1fr 1fr 1fr}
+.sci{background:var(--card);border:2px solid var(--bdr);border-radius:var(--r);padding:14px;cursor:pointer;transition:all var(--tr);text-align:center;position:relative}
+.sci:hover{border-color:var(--pri-l);box-shadow:var(--sh)}
+.sci.on{border-color:var(--pri);background:var(--pri-bg)}
+.sci .ic{font-size:26px;margin-bottom:6px}
+.sci .nm{font-size:14px;font-weight:700}
+.sci .ds{font-size:12px;color:var(--t2);margin-top:3px}
+.sci.on .ds{color:var(--pri-h)}
+.sci .ck{position:absolute;top:7px;right:7px;width:20px;height:20px;border-radius:50%;border:2px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;transition:all var(--tr)}
+.sci.on .ck{background:var(--pri);border-color:var(--pri);color:#fff}
+
+/* ── Chips ── */
+.cg{display:flex;flex-wrap:wrap;gap:8px}
+.cp{padding:8px 16px;border-radius:20px;border:1.5px solid var(--bdr);background:var(--card);font-size:13px;font-weight:500;cursor:pointer;transition:all var(--tr);user-select:none}
+.cp:hover{border-color:var(--pri-l);background:var(--pri-bg)}
+.cp.on{border-color:var(--pri);background:var(--pri);color:#fff}
+
+/* ── Text Input ── */
+.ti{width:100%;padding:14px 16px;border:1.5px solid var(--bdr);border-radius:var(--rs);font-family:inherit;font-size:14px;line-height:1.6;color:var(--t1);background:var(--chip);resize:vertical;transition:border-color var(--tr)}
+.ti:focus{outline:none;border-color:var(--pri);background:#fff}
+.ti::placeholder{color:var(--t3)}
+.cc{text-align:right;font-size:11px;color:var(--t3);margin-top:4px}
+
+/* ── Ref Grid ── */
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rc{background:var(--card);border:2px solid var(--bdr);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all var(--tr);position:relative}
+.rc:hover{box-shadow:var(--shm)}
+.rc.on{border-color:var(--pri)}
+.rt{aspect-ratio:16/9;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.rt .dur{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.7);color:#fff;font-size:11px;padding:2px 6px;border-radius:4px}
+.rt .pi{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.rt .pi span{width:32px;height:32px;background:rgba(255,255,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;backdrop-filter:blur(4px)}
+.ri{padding:10px 12px}
+.ri .rn{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ri .rm{font-size:11px;color:var(--t2)}
+.rc .rck{position:absolute;top:8px;left:8px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;transition:all var(--tr);z-index:2}
+.rc.on .rck{background:var(--pri);color:#fff}
+
+/* ═══ Step 1: Reference Criteria (from existing prototype) ═══ */
+.extraction-progress{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:12px}
+.extraction-progress.hidden{display:none}
+.ext-spin{width:18px;height:18px;border:2.5px solid var(--bdr);border-top-color:var(--pri);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+.ext-text{font-size:13px;color:var(--t2);flex:1}
+.ext-bar{width:100%;height:4px;background:var(--chip);border-radius:2px;overflow:hidden;margin-top:6px}
+.ext-fill{height:100%;background:linear-gradient(90deg,var(--pri),var(--pri-l));border-radius:2px;width:0%;transition:width .5s ease}
+
+/* Recommend Cards */
+.rec-cards{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;margin-bottom:20px;-webkit-overflow-scrolling:touch}
+.rec-card{background:var(--card);border:2px solid var(--bdr);border-radius:var(--r);padding:16px;min-width:240px;cursor:pointer;transition:all var(--tr);flex-shrink:0}
+.rec-card:hover{border-color:var(--pri-l);box-shadow:var(--sh)}
+.rec-card.on{border-color:var(--pri);background:var(--pri-bg)}
+.rec-name{font-size:14px;font-weight:700;margin-bottom:6px}
+.rec-reason{font-size:12px;color:var(--t2);margin-bottom:10px;line-height:1.5}
+.rec-tags{display:flex;flex-wrap:wrap;gap:4px}
+.rec-tag{font-size:11px;padding:3px 8px;border-radius:10px;background:var(--chip);color:var(--t2);font-weight:500}
+.rec-card.on .rec-tag{background:rgba(108,92,231,.15);color:var(--pri)}
+.rec-custom{font-size:12px;color:var(--pri);font-weight:600;padding:4px 0;display:none}
+
+/* Mode Selection */
+.mode-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.mode-card{background:var(--card);border:2px solid var(--bdr);border-radius:var(--r);padding:20px 16px;cursor:pointer;transition:all var(--tr);text-align:center;position:relative}
+.mode-card:hover{border-color:var(--pri-l);box-shadow:var(--sh)}
+.mode-card.on{border-color:var(--pri);background:var(--pri-bg)}
+.mode-card .mc-icon{font-size:28px;margin-bottom:8px}
+.mode-card .mc-name{font-size:15px;font-weight:700;margin-bottom:4px}
+.mode-card .mc-desc{font-size:12px;color:var(--t2)}
+.mode-card.on .mc-desc{color:var(--pri-h)}
+.mode-card .mc-ck{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;border:2px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;transition:all var(--tr)}
+.mode-card.on .mc-ck{background:var(--pri);border-color:var(--pri);color:#fff}
+
+/* Custom Section */
+.cust-sec{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.4,0,.2,1),opacity .3s ease;opacity:0}
+.cust-sec.vis{max-height:5000px;opacity:1}
+
+/* Category Cards */
+.cat-cards{display:flex;flex-direction:column;gap:10px}
+.cat-card{background:var(--card);border:1.5px solid var(--bdr);border-radius:var(--r);overflow:hidden;transition:all var(--tr);box-shadow:var(--sh)}
+.cat-card:hover{box-shadow:var(--shm)}
+.cat-card.has-sel{border-color:var(--pri-l)}
+.ch{padding:16px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;user-select:none;transition:background var(--tr)}
+.ch:hover{background:rgba(108,92,231,.03)}
+.ci{width:40px;height:40px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ci.hook{background:#FFF3E0}.ci.tempo{background:#E3F2FD}.ci.composition{background:#F3E5F5}
+.ci.structure{background:#E8F5E9}.ci.viral{background:#FFF8E1}.ci.cta{background:#FCE4EC}
+.c-info{flex:1;min-width:0}
+.c-nm{font-size:15px;font-weight:700;margin-bottom:1px}
+.c-ds{font-size:13px;color:var(--t2)}
+.c-cnt{font-size:12px;color:var(--pri);font-weight:600;background:var(--pri-bg);padding:3px 9px;border-radius:16px;white-space:nowrap;opacity:0;transition:opacity var(--tr)}
+.c-cnt.vis{opacity:1}
+.c-chev{width:22px;height:22px;color:var(--t3);transition:transform var(--tr);flex-shrink:0}
+.cat-card.exp .c-chev{transform:rotate(180deg)}
+.tgl-sw{width:44px;height:26px;border-radius:13px;background:var(--bdr);position:relative;flex-shrink:0;transition:background var(--tr);cursor:pointer}
+.tgl-sw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15);transition:transform var(--tr)}
+.tgl-sw.on{background:var(--pri)}
+.tgl-sw.on::after{transform:translateX(18px)}
+.tgl-det{background:none;border:1px solid var(--bdr);border-radius:6px;padding:5px 10px;font-size:11px;color:var(--t2);cursor:pointer;white-space:nowrap;transition:all var(--tr);flex-shrink:0}
+.tgl-det:hover{border-color:var(--pri);color:var(--pri);background:var(--pri-bg)}
+.cat-card.tgl.sel{border-color:var(--pri);background:var(--pri-bg)}
+.cat-card.tgl:not(.sel){opacity:.7}
+.cat-card.tgl:not(.sel):hover{opacity:1}
+.c-stags{display:flex;flex-wrap:wrap;gap:5px;padding:0 18px 12px}
+.cat-card.exp .c-stags{display:none}
+.stag{font-size:11px;background:var(--pri-bg);color:var(--pri);padding:3px 9px;border-radius:16px;font-weight:500}
+.cb{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1)}
+.cat-card.exp .cb{max-height:800px}
+.cb-in{padding:0 18px 18px;border-top:1px solid var(--bdr)}
+.dep-ctrl{display:flex;background:var(--chip);border-radius:var(--rs);padding:3px;margin:14px 0 10px;gap:3px}
+.dep-opt{flex:1;padding:7px 10px;text-align:center;font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;transition:all var(--tr);color:var(--t2);border:none;background:none}
+.dep-opt.on{background:var(--card);color:var(--pri);box-shadow:var(--sh)}
+.opts{display:flex;flex-direction:column;gap:7px;margin-top:12px}
+.oi{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--chip);border:1.5px solid transparent;border-radius:var(--rs);cursor:pointer;transition:all var(--tr)}
+.oi:hover{background:#EEEDF8;border-color:var(--pri-l)}
+.oi.on{background:var(--pri-bg);border-color:var(--pri)}
+.o-ck{width:20px;height:20px;border-radius:6px;border:2px solid var(--bdr);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all var(--tr);font-size:12px;color:transparent}
+.oi.on .o-ck{background:var(--pri);border-color:var(--pri);color:#fff}
+.o-co{flex:1;min-width:0}
+.o-nm{font-size:13px;font-weight:600;margin-bottom:1px}
+.o-ds{font-size:12px;color:var(--t2);line-height:1.4}
+.inl-sum{font-size:11px;color:var(--pri);background:var(--pri-bg);padding:5px 9px;border-radius:5px;margin-top:5px;line-height:1.5;border-left:2px solid var(--pri-l)}
+.det-btn{background:none;border:1px solid var(--bdr);border-radius:6px;padding:5px 10px;font-size:11px;color:var(--t2);cursor:pointer;white-space:nowrap;transition:all var(--tr);flex-shrink:0}
+.det-btn:hover{border-color:var(--pri);color:var(--pri);background:var(--pri-bg)}
+.note-sec{margin-top:18px;background:var(--card);border:1.5px solid var(--bdr);border-radius:var(--r);padding:18px}
+.note-lbl{font-size:14px;font-weight:700;margin-bottom:3px}
+.note-hint{font-size:12px;color:var(--t2);margin-bottom:10px}
+
+/* ── Side Panel ── */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:200;opacity:0;pointer-events:none;transition:opacity var(--tr)}
+.ov.on{opacity:1;pointer-events:auto}
+.sp{position:fixed;top:0;right:0;bottom:0;width:400px;max-width:90vw;background:var(--card);z-index:201;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:var(--shm)}
+.sp.on{transform:translateX(0)}
+.sp-h{padding:18px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px}
+.sp-cl{background:none;border:none;font-size:20px;cursor:pointer;color:var(--t2);padding:4px;border-radius:6px}
+.sp-cl:hover{background:var(--chip)}
+.sp-ti{font-size:16px;font-weight:700;flex:1}
+.sp-nav{display:flex;gap:4px}
+.sp-nb{background:var(--chip);border:none;width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:15px;color:var(--t2);transition:all var(--tr);display:flex;align-items:center;justify-content:center}
+.sp-nb:hover{background:var(--bdr)}
+.sp-nb:disabled{opacity:.3;cursor:default}
+.sp-b{flex:1;overflow-y:auto;padding:20px}
+.sp-sec{margin-bottom:20px}
+.sp-st{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.ts-badge{display:inline-flex;align-items:center;gap:5px;background:var(--chip);padding:5px 10px;border-radius:6px;font-size:13px;font-weight:600;color:var(--pri);margin-bottom:10px}
+.vid-prev{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:13px;position:relative}
+.vid-prev::after{content:'▶';position:absolute;width:40px;height:40px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;backdrop-filter:blur(4px)}
+.an-text{font-size:14px;line-height:1.7;color:var(--t1)}
+.sp-f{padding:14px 20px;border-top:1px solid var(--bdr)}
+.sp-tgl{width:100%;padding:12px;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;transition:all var(--tr);border:2px solid var(--pri);background:#fff;color:var(--pri)}
+.sp-tgl.sel{background:var(--pri);color:#fff}
+
+/* ── Ideas ── */
+.id-load{text-align:center;padding:50px 20px}
+.id-load .spinner{width:44px;height:44px;border:4px solid var(--bdr);border-top-color:var(--pri);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+.id-load .lt{font-size:15px;color:var(--t2)}
+.id-load .ls{font-size:13px;color:var(--t3);margin-top:4px}
+.id-card{background:var(--card);border:2px solid var(--bdr);border-radius:var(--r);padding:22px;margin-bottom:12px;cursor:pointer;transition:all var(--tr);position:relative}
+.id-card:hover{border-color:var(--pri-l);box-shadow:var(--shm)}
+.id-card.on{border-color:var(--pri);background:var(--pri-bg)}
+.id-num{font-size:12px;font-weight:700;color:var(--pri);margin-bottom:6px}
+.id-ti{font-size:16px;font-weight:800;margin-bottom:6px}
+.id-sm{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:12px}
+.id-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.id-tag{font-size:11px;padding:3px 9px;border-radius:12px;font-weight:600}
+.id-tag.hook{background:#FFF3E0;color:#E65100}
+.id-tag.style{background:#E3F2FD;color:#1565C0}
+.id-tag.viral{background:#FFF8E1;color:#F57F17}
+.id-tag.structure{background:#E8F5E9;color:#2E7D32}
+.id-tag.tone{background:#F3E5F5;color:#7B1FA2}
+.id-tag.cta{background:#FCE4EC;color:#C62828}
+.id-str{background:var(--chip);border-radius:var(--rs);padding:12px;font-size:12px;line-height:1.7;color:var(--t2)}
+.id-str strong{color:var(--t1);font-weight:600}
+.id-ck{position:absolute;top:14px;right:14px;width:26px;height:26px;border-radius:50%;border:2px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent;transition:all var(--tr)}
+.id-card.on .id-ck{background:var(--pri);border-color:var(--pri);color:#fff}
+.alt-box{margin-top:18px;background:var(--card);border:1.5px solid var(--bdr);border-radius:var(--r);padding:18px}
+.alt-ti{font-size:14px;font-weight:700;margin-bottom:8px}
+.alt-row{display:flex;gap:8px}
+.alt-btn{padding:11px 18px;background:var(--pri);color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all var(--tr)}
+.alt-btn:hover{background:var(--pri-h)}
+
+/* ── Plan ── */
+.pl-box{background:var(--card);border:1.5px solid var(--bdr);border-radius:var(--r);padding:24px;margin-bottom:18px}
+.pl-st{font-size:12px;font-weight:700;color:var(--pri);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;margin-top:18px}
+.pl-st:first-child{margin-top:0}
+.pl-tx{font-size:14px;line-height:1.8}
+.pl-tx ul{padding-left:18px;margin-top:4px}
+.pl-tx li{margin-bottom:3px}
+.pl-tr{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr)}
+.pl-tr:last-child{border-bottom:none}
+.pl-tm{font-size:12px;font-weight:700;color:var(--pri);min-width:65px;flex-shrink:0}
+.pl-td{font-size:13px}
+.rev-area{background:var(--card);border:1.5px solid var(--bdr);border-radius:var(--r);padding:18px}
+.rev-ti{font-size:14px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.rev-cnt{font-size:12px;color:var(--t3)}
+.rev-hist{margin-top:14px;display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto}
+.rev-msg{padding:8px 12px;border-radius:var(--rs);font-size:13px;line-height:1.5;max-width:85%}
+.rev-msg.u{background:var(--pri);color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
+.rev-msg.a{background:var(--chip);align-self:flex-start;border-bottom-left-radius:3px}
+.rev-row{display:flex;gap:8px;margin-top:10px}
+
+/* ── Storyboard ── */
+.sb-tl{position:relative;padding-left:36px}
+.sb-tl::before{content:'';position:absolute;left:13px;top:0;bottom:0;width:2px;background:var(--bdr)}
+.sb-c{position:relative;margin-bottom:16px}
+.sb-dot{position:absolute;left:-29px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--pri);border:3px solid var(--pri-bg);z-index:2}
+.sb-cc{background:var(--card);border:1.5px solid var(--bdr);border-radius:var(--r);overflow:hidden}
+.sb-cc:hover{box-shadow:var(--shm)}
+.sb-ch{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--bdr)}
+.sb-cn{font-size:11px;font-weight:800;color:var(--pri);background:var(--pri-bg);padding:3px 8px;border-radius:5px}
+.sb-ct{font-size:11px;color:var(--t2);font-weight:600}
+.sb-cam{font-size:11px;color:var(--t3);margin-left:auto}
+.sb-bd{display:flex}
+.sb-vis{width:160px;flex-shrink:0;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.6);font-size:12px;position:relative}
+.sb-vis .gb{position:absolute;bottom:4px;right:4px;font-size:9px;background:rgba(0,0,0,.5);color:#fff;padding:2px 6px;border-radius:3px}
+.sb-co{padding:14px;flex:1;min-width:0}
+.sb-sn{font-size:13px;font-weight:600;margin-bottom:4px}
+.sb-ds{font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:6px}
+.sb-sub{font-size:12px;color:var(--pri);background:var(--pri-bg);padding:5px 8px;border-radius:5px;border-left:3px solid var(--pri);display:inline-block}
+
+/* ── Image Gen ── */
+.gn-p{text-align:center;padding:30px 18px;background:var(--card);border-radius:var(--r);margin-bottom:18px}
+.gn-pb{width:100%;height:5px;background:var(--chip);border-radius:3px;overflow:hidden;margin:14px 0}
+.gn-pf{height:100%;background:linear-gradient(90deg,var(--pri),var(--pri-l));border-radius:3px;transition:width .5s ease}
+.gn-pt{font-size:13px;color:var(--t2)}
+.gn-pc{font-size:22px;font-weight:800;color:var(--pri);margin-bottom:2px}
+.gn-g{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gn-i{background:var(--card);border:1.5px solid var(--bdr);border-radius:var(--r);overflow:hidden;animation:fu .4s ease}
+.gn-i:hover{box-shadow:var(--shm)}
+.gn-im{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.6);font-size:12px;position:relative}
+.gn-im .st{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);font-size:11px;color:#fff;backdrop-filter:blur(2px)}
+.gn-im .st.ok{background:transparent}
+.gn-inf{padding:10px}
+.gn-cn{font-size:11px;font-weight:700;color:var(--pri)}
+.gn-ds{font-size:11px;color:var(--t2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gn-ac{display:flex;gap:5px;margin-top:6px}
+.gn-ab{font-size:10px;padding:3px 8px;border:1px solid var(--bdr);border-radius:5px;background:var(--card);color:var(--t2);cursor:pointer}
+.gn-ab:hover{border-color:var(--pri);color:var(--pri)}
+
+/* ── Bottom Nav ── */
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--bdr);padding:14px 20px;z-index:100;box-shadow:0 -4px 16px rgba(0,0,0,.06)}
+.bn-in{max-width:740px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.bn-info{font-size:13px;color:var(--t2);flex:1;min-width:0}
+.bn-info strong{color:var(--pri)}
+.bn-btns{display:flex;gap:8px}
+.nb{padding:12px 24px;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;transition:all var(--tr);border:none;white-space:nowrap}
+.nb.bk{background:var(--chip);color:var(--t1)}
+.nb.bk:hover{background:var(--bdr)}
+.nb.nx{background:var(--pri);color:#fff}
+.nb.nx:hover:not(:disabled){background:var(--pri-h);transform:translateY(-1px);box-shadow:var(--shm)}
+.nb:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+
+/* ── Modal ── */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity var(--tr)}
+.mo.on{opacity:1;pointer-events:auto}
+.mo-box{background:var(--card);border-radius:var(--r);padding:24px;max-width:360px;width:90%;box-shadow:var(--shm);transform:scale(.95);transition:transform var(--tr)}
+.mo.on .mo-box{transform:scale(1)}
+.mo-ti{font-size:16px;font-weight:700;margin-bottom:6px}
+.mo-ds{font-size:14px;color:var(--t2);margin-bottom:20px;line-height:1.5}
+.mo-ac{display:flex;gap:8px;justify-content:flex-end}
+.mo-btn{padding:9px 18px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all var(--tr)}
+.mo-btn.cc{background:var(--chip);color:var(--t1)}
+.mo-btn.cf{background:var(--err);color:#fff}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--t1);color:#fff;padding:10px 20px;border-radius:var(--rs);font-size:13px;font-weight:500;z-index:400;opacity:0;pointer-events:none;transition:all .3s ease;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── Responsive ── */
+@media(max-width:640px){
+  .main{padding:16px 16px 120px}
+  .sc.c3{grid-template-columns:1fr 1fr}
+  .mode-cards{grid-template-columns:1fr}
+  .pg-t{font-size:19px}
+  .prog-lbl{display:none}
+  .gn-g{grid-template-columns:1fr}
+  .sb-vis{width:110px}
+  .alt-row{flex-direction:column}
+  .rev-row{flex-direction:column}
+  .sp{width:100%;max-width:100vw;top:auto;bottom:0;height:85vh;border-radius:var(--r) var(--r) 0 0;transform:translateY(100%)}
+  .sp.on{transform:translateY(0)}
+}
+@media(min-width:769px){
+  .cat-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .cat-card.multi.exp{grid-column:1/-1}
+}
+.sec-ti{font-size:14px;font-weight:700;color:var(--t2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+.sec-sub{font-size:13px;color:var(--t2);margin-top:-6px;margin-bottom:12px;line-height:1.5}
+.hid{display:none!important}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="prog"><div class="prog-in" id="progBar"></div></div>
+
+<!-- Main Content -->
+<div class="main" id="mainContent">
+
+<!-- ═══ STEP 0: Reference & Topic ═══ -->
+<div class="stp" id="step0">
+  <div class="pg-t">어떤 영상을 만들고 싶나요?</div>
+  <div class="pg-s">레퍼런스 영상을 선택하고, 만들고 싶은 영상의 주제를 알려주세요.</div>
+  <div class="qg">
+    <div class="ql">레퍼런스 영상 선택 <span class="badge">필수</span></div>
+    <div class="rg" id="refGrid"></div>
+  </div>
+  <div class="qg">
+    <div class="ql">영상 주제 <span class="badge">필수</span></div>
+    <textarea class="ti" id="topicInput" rows="3" placeholder="예: 새로 나온 비타민C 세럼 리뷰, 카페 시그니처 메뉴 소개, 주말 브이로그..." maxlength="200" oninput="onTopicInput()"></textarea>
+    <div class="cc"><span id="topicCount">0</span>/200</div>
+  </div>
+</div>
+
+<!-- ═══ STEP 1: Reference Criteria ═══ -->
+<div class="stp" id="step1">
+  <div class="pg-t">레퍼런스 참고 기준 선택</div>
+  <div class="pg-s">레퍼런스 영상에서 참고할 요소를 선택하세요. AI가 기획 내용에 맞는 조합을 추천해드립니다.</div>
+
+  <div class="extraction-progress" id="extProg">
+    <div class="ext-spin"></div>
+    <div style="flex:1">
+      <div class="ext-text">레퍼런스 영상에서 참고 가능한 요소를 분석하고 있습니다...</div>
+      <div class="ext-bar"><div class="ext-fill" id="extFill"></div></div>
+    </div>
+  </div>
+
+  <div class="sec-ti">AI 추천 조합</div>
+  <div class="sec-sub">입력하신 주제에 맞는 참고 기준 조합을 추천합니다</div>
+  <div class="rec-cards" id="recCards"></div>
+  <div class="rec-custom" id="recCustom">사용자 커스텀 선택</div>
+
+  <div class="sec-ti mt16">참고 방식</div>
+  <div class="mode-cards">
+    <div class="mode-card" id="modeAll" onclick="setRefMode('all')">
+      <div class="mc-ck">&#10003;</div>
+      <div class="mc-icon">&#128203;</div>
+      <div class="mc-name">전체 참고</div>
+      <div class="mc-desc">모든 요소를 참고하여 기획합니다</div>
+    </div>
+    <div class="mode-card" id="modeCustom" onclick="setRefMode('custom')">
+      <div class="mc-ck">&#10003;</div>
+      <div class="mc-icon">&#9998;</div>
+      <div class="mc-name">세부 선택</div>
+      <div class="mc-desc">참고할 요소를 직접 선택합니다</div>
+    </div>
+  </div>
+
+  <div class="cust-sec" id="custSec">
+    <div class="sec-ti">참고 항목</div>
+    <div class="sec-sub">이 레퍼런스 영상에서 어떤 요소를 참고할지 선택하세요</div>
+    <div class="cat-cards" id="catCards"></div>
+  </div>
+
+  <div class="note-sec hid" id="noteSec">
+    <div class="note-lbl">추가 참고 사항</div>
+    <div class="note-hint">따로 참고하고 싶은 내용이 있다면 자유롭게 작성해주세요</div>
+    <textarea class="ti" id="custNote" placeholder="예: 자막 스타일도 비슷하게 해주세요, BGM 분위기를 참고해주세요..." maxlength="500" oninput="onNoteInput()"></textarea>
+    <div class="cc"><span id="noteCount">0</span>/500</div>
+  </div>
+</div>
+
+<!-- ═══ STEP 2: Questions 1/3 ═══ -->
+<div class="stp" id="step2">
+  <div class="pg-t">기본 설정</div>
+  <div class="pg-s">영상의 기본 정보를 알려주세요. 맞춤 기획안을 만드는 데 활용됩니다.</div>
+  <div class="qg"><div class="ql">어떤 플랫폼에 올릴 영상인가요?</div><div class="sc c3" id="platCards"></div></div>
+  <div class="qg"><div class="ql">이 영상의 주요 목적은?</div><div class="sc c2" id="goalCards"></div></div>
+  <div class="qg"><div class="ql">타겟 시청자는 누구인가요?</div><div class="sc c3" id="audCards"></div></div>
+</div>
+
+<!-- ═══ STEP 3: Questions 2/3 ═══ -->
+<div class="stp" id="step3">
+  <div class="pg-t">영상 스타일</div>
+  <div class="pg-s">원하는 영상의 분위기와 형식을 알려주세요.</div>
+  <div class="qg"><div class="ql">어떤 분위기로 만들고 싶나요?</div><div class="sc c3" id="moodCards"></div></div>
+  <div class="qg"><div class="ql">영상 길이는?</div><div class="sc c3" id="lenCards"></div></div>
+  <div class="qg"><div class="ql">출연/진행 방식은?</div><div class="sc c2" id="presCards"></div></div>
+</div>
+
+<!-- ═══ STEP 4: Questions 3/3 ═══ -->
+<div class="stp" id="step4">
+  <div class="pg-t">핵심 내용</div>
+  <div class="pg-s">영상에서 전달하고 싶은 메시지와 꼭 포함할 요소를 알려주세요.</div>
+  <div class="qg">
+    <div class="ql">핵심 메시지 <span class="badge">선택</span></div>
+    <div class="qh">이 영상을 통해 시청자가 꼭 기억했으면 하는 것은?</div>
+    <textarea class="ti" id="msgInput" rows="3" placeholder="예: 이 세럼 하나면 아침 루틴 끝! 순한 성분인데 효과는 확실하다는 걸 보여주고 싶어요" maxlength="300" oninput="updCC('msgInput','msgCC')"></textarea>
+    <div class="cc"><span id="msgCC">0</span>/300</div>
+  </div>
+  <div class="qg"><div class="ql">꼭 들어가야 할 요소 <span class="badge">다중 선택</span></div><div class="cg" id="elemChips"></div></div>
+  <div class="qg">
+    <div class="ql">추가 요청 <span class="badge">선택</span></div>
+    <textarea class="ti" id="extInput" rows="2" placeholder="예: 브이로그 느낌으로, BGM은 잔잔하게..." maxlength="200" oninput="updCC('extInput','extCC')"></textarea>
+    <div class="cc"><span id="extCC">0</span>/200</div>
+  </div>
+</div>
+
+<!-- ═══ STEP 5: Ideas ═══ -->
+<div class="stp" id="step5">
+  <div class="pg-t">영상 아이디어</div>
+  <div class="pg-s">입력하신 내용을 바탕으로 AI가 기획한 영상 아이디어입니다.</div>
+  <div class="id-load" id="idLoad"><div class="spinner"></div><div class="lt">영상 아이디어를 기획하고 있습니다...</div><div class="ls">레퍼런스 분석 + 입력 정보 조합 중</div></div>
+  <div id="idCon" class="hid"></div>
+  <div id="altArea" class="hid">
+    <div class="alt-box"><div class="alt-ti">다른 방향의 아이디어가 필요하신가요?</div>
+    <div class="alt-row"><input class="ti" id="altIn" placeholder="예: 좀 더 유머러스하게, B급 감성으로..." /><button class="alt-btn" onclick="reqAlt()">다른 아이디어</button></div></div>
+  </div>
+</div>
+
+<!-- ═══ STEP 6: Plan ═══ -->
+<div class="stp" id="step6">
+  <div class="pg-t">상세 기획안</div>
+  <div class="pg-s">선택한 아이디어를 기반으로 구체적인 기획안입니다. 수정하고 싶은 부분을 자유롭게 요청하세요.</div>
+  <div id="planCon"></div>
+  <div class="rev-area" id="revArea">
+    <div class="rev-ti">수정 요청 <span class="rev-cnt" id="revCnt">0회 수정됨</span></div>
+    <div class="rev-hist" id="revHist"></div>
+    <div class="rev-row mt12"><input class="ti" id="revIn" placeholder="예: 오프닝을 좀 더 임팩트 있게, CTA를 자연스럽게..." /><button class="alt-btn" onclick="submitRev()">수정</button></div>
+  </div>
+</div>
+
+<!-- ═══ STEP 7: Storyboard ═══ -->
+<div class="stp" id="step7">
+  <div class="pg-t">스토리보드</div>
+  <div class="pg-s">기획안을 기반으로 컷별 스토리보드를 구성했습니다.</div>
+  <div class="sb-tl" id="sbTL"></div>
+</div>
+
+<!-- ═══ STEP 8: Image Gen ═══ -->
+<div class="stp" id="step8">
+  <div class="pg-t">컷별 이미지 생성</div>
+  <div class="pg-s">스토리보드의 각 컷에 대한 참고 이미지를 생성합니다.</div>
+  <div class="gn-p" id="gnP"><div class="gn-pc" id="gnPC">0 / 0</div><div class="gn-pt">이미지를 생성하고 있습니다...</div><div class="gn-pb"><div class="gn-pf" id="gnPF"></div></div></div>
+  <div class="gn-g" id="gnG"></div>
+  <div class="hid mt20" id="gnDone" style="text-align:center">
+    <div style="font-size:36px;margin-bottom:10px;color:var(--ok)">&#10003;</div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px">모든 이미지가 생성되었습니다</div>
+    <div style="font-size:13px;color:var(--t2)">스토리보드와 함께 활용하세요</div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- Bottom Nav -->
+<div class="bn"><div class="bn-in">
+  <div class="bn-info" id="navInfo"></div>
+  <div class="bn-btns">
+    <button class="nb bk" id="bkBtn" onclick="goBack()">이전</button>
+    <button class="nb nx" id="nxBtn" onclick="goNext()" disabled>다음</button>
+  </div>
+</div></div>
+
+<!-- Side Panel -->
+<div class="ov" id="overlay"></div>
+<div class="sp" id="sPanel">
+  <div class="sp-h">
+    <button class="sp-cl" id="spClose">&#10005;</button>
+    <span class="sp-ti" id="spTitle">자세히 보기</span>
+    <div class="sp-nav" id="spNav">
+      <button class="sp-nb" id="spPrev">&#8249;</button>
+      <button class="sp-nb" id="spNext">&#8250;</button>
+    </div>
+  </div>
+  <div class="sp-b" id="spBody"></div>
+  <div class="sp-f"><button class="sp-tgl" id="spTgl">이 옵션 선택하기</button></div>
+</div>
+
+<!-- Modal -->
+<div class="mo" id="modal">
+  <div class="mo-box">
+    <div class="mo-ti" id="moTi"></div>
+    <div class="mo-ds" id="moDs"></div>
+    <div class="mo-ac">
+      <button class="mo-btn cc" id="moCC">취소</button>
+      <button class="mo-btn cf" id="moCF">확인</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════
+const REFS=[
+  {id:'r1',title:'스킨케어 루틴 리뷰',ch:'@skincarelab',dur:'0:34',grad:'linear-gradient(135deg,#667eea,#764ba2)'},
+  {id:'r2',title:'카페 브이로그',ch:'@cafedaily',dur:'0:45',grad:'linear-gradient(135deg,#f093fb,#f5576c)'},
+  {id:'r3',title:'운동 챌린지 영상',ch:'@fitlife',dur:'0:28',grad:'linear-gradient(135deg,#4facfe,#00f2fe)'},
+  {id:'r4',title:'제품 언박싱',ch:'@unboxkorea',dur:'0:52',grad:'linear-gradient(135deg,#43e97b,#38f9d7)'},
+];
+
+const CATS=[
+  {id:'hook',name:'훅(포인트)',desc:'시청자의 관심을 끄는 요소',icon:'\u{1F3AF}',cls:'hook',type:'multi',hasDepth:true,
+   opts:[
+    {id:'hook-question',name:'질문형',desc:'궁금증을 유발하는 질문으로 시작',cp:'"이거 진짜 효과 있을까?" — 시작 3초, 자막으로 호기심 유발'},
+    {id:'hook-surprise',name:'반전/서프라이즈',desc:'예상을 뒤엎는 요소로 주목',cp:'완성된 결과를 먼저 보여준 후 과정을 역추적, 0:00~0:03'},
+    {id:'hook-trend',name:'트렌드 활용',desc:'최신 유행 요소를 활용한 진입',cp:'유행 사운드 "original sound" 사용, 릴스 트렌드 포맷 적용'},
+    {id:'hook-emotion',name:'감정 자극',desc:'공감, 분노, 감동 등 감정 유발',cp:'"나만 이런 줄 알았는데..." — 공감 내레이션 + 표정 클로즈업'},
+    {id:'hook-provoke',name:'도발/논쟁',desc:'의견 대립을 유도하여 참여 촉진',cp:'"이것도 모르면 손해" — 볼드 자막 + 손가락 포인팅 제스처'},
+    {id:'hook-visual',name:'비주얼 임팩트',desc:'강렬한 시각 요소로 시선 고정',cp:'0.5초 줌인 + 네온 색감 플래시, 배경음 드롭'}
+  ]},
+  {id:'tempo',name:'영상 템포',desc:'평균 1.5초 컷 전환, 빠른 템포 유지',icon:'\u26A1',cls:'tempo',type:'toggle'},
+  {id:'composition',name:'영상 구도',desc:'다양한 앵글과 구도 전환 활용',icon:'\u{1F3AC}',cls:'composition',type:'multi',
+   opts:[
+    {id:'comp-closeup',name:'클로즈업',desc:'제품 디테일 강조, 0:05~0:08 구간 활용'},
+    {id:'comp-wide',name:'와이드샷',desc:'오프닝에 공간감 연출, 브랜드 분위기 전달'},
+    {id:'comp-pov',name:'POV(1인칭)',desc:'사용 경험을 1인칭으로 전달, 몰입감 극대화'},
+    {id:'comp-topdown',name:'탑다운',desc:'제품 배치/언박싱 장면에서 위에서 촬영'},
+    {id:'comp-symmetry',name:'대칭 구도',desc:'비포-애프터 비교 장면에서 좌우 대칭 사용'},
+    {id:'comp-dynamic',name:'동적 무빙',desc:'트래킹 샷으로 역동적 전환, 에너지 전달'}
+  ]},
+  {id:'structure',name:'전개 방식',desc:'"문제 → 해결 → 결과" 3단 구조',icon:'\u{1F4D0}',cls:'structure',type:'toggle'},
+  {id:'viral',name:'바이럴 요소',desc:'공유·저장을 유도하는 장치 포함',icon:'\u{1F525}',cls:'viral',type:'multi',
+   opts:[
+    {id:'viral-meme',name:'밈/유행어',desc:'유행 밈 사운드를 배경에 활용, 친근감 형성'},
+    {id:'viral-challenge',name:'챌린지',desc:'간단한 동작 챌린지 제시, 참여 유도 구조'},
+    {id:'viral-empathy',name:'공감 포인트',desc:'"다들 이런 경험 있죠?" — 공감형 도입부'},
+    {id:'viral-twist',name:'반전 결말',desc:'마지막 2초에 예상 밖 결과, 재시청 유도'},
+    {id:'viral-engage',name:'참여 유도',desc:'"여러분은 어떤가요?" — 댓글 유도 자막'},
+    {id:'viral-info',name:'정보 가치',desc:'핵심 팁 3가지를 숫자 자막으로 정리'}
+  ]},
+  {id:'cta',name:'CTA',desc:'마지막 3초, 자막+음성 이중 전달',icon:'\u{1F4E2}',cls:'cta',type:'toggle'}
+];
+
+const PLATS=[{id:'reels',ic:'\u{1F4F1}',nm:'Instagram',ds:'릴스'},{id:'tiktok',ic:'\u{1F3B5}',nm:'TikTok',ds:'숏폼'},{id:'shorts',ic:'\u{25B6}',nm:'YouTube Shorts',ds:'쇼츠'},{id:'youtube',ic:'\u{1F3AC}',nm:'YouTube',ds:'일반 영상'},{id:'etc',ic:'\u22EF',nm:'기타',ds:'직접 입력'}];
+const GOALS=[{id:'brand',ic:'\u2B50',nm:'브랜드 인지도',ds:'브랜드를 알리고 싶어요'},{id:'product',ic:'\u{1F6D2}',nm:'제품/서비스 홍보',ds:'판매로 연결하고 싶어요'},{id:'info',ic:'\u{1F4DA}',nm:'정보/교육',ds:'유용한 정보를 전달'},{id:'entertain',ic:'\u{1F3AE}',nm:'엔터테인먼트',ds:'재미있는 콘텐츠'},{id:'review',ic:'\u{1F4C4}',nm:'리뷰/후기',ds:'솔직한 사용 후기'},{id:'vlog',ic:'\u{1F3A5}',nm:'브이로그',ds:'일상을 기록'}];
+const AUDS=[{id:'teen',ic:'\u{1F393}',nm:'10대',ds:'중·고등학생'},{id:'young',ic:'\u{1F4BB}',nm:'20~30대',ds:'MZ세대'},{id:'mid',ic:'\u{1F4BC}',nm:'30~40대',ds:'직장인/부모'},{id:'senior',ic:'\u{1F331}',nm:'50대+',ds:'시니어'},{id:'all',ic:'\u{1F310}',nm:'전체',ds:'연령 무관'}];
+const MOODS=[{id:'pro',ic:'\u{1F4BC}',nm:'전문적/신뢰',ds:'깔끔하고 정돈된'},{id:'casual',ic:'\u270C',nm:'캐주얼/친근',ds:'편한 톤'},{id:'trendy',ic:'\u{1F525}',nm:'트렌디/힙',ds:'감각적인'},{id:'emotional',ic:'\u{1F49C}',nm:'감성/감동',ds:'잔잔하고 따뜻한'},{id:'funny',ic:'\u{1F602}',nm:'유머/재미',ds:'웃기고 가벼운'},{id:'luxury',ic:'\u2728',nm:'고급/럭셔리',ds:'세련되고 품격있는'}];
+const LENS=[{id:'15s',ic:'\u26A1',nm:'15초 이하',ds:'초숏폼'},{id:'30s',ic:'\u23F0',nm:'30초',ds:'릴스/쇼츠'},{id:'60s',ic:'\u{1F552}',nm:'60초',ds:'숏폼'},{id:'3m',ic:'\u{1F4F9}',nm:'3분 이내',ds:'미드폼'},{id:'5m',ic:'\u{1F3AC}',nm:'5분 이상',ds:'롱폼'}];
+const PRES=[{id:'face',ic:'\u{1F464}',nm:'얼굴 출연',ds:'직접 나와서 진행'},{id:'voice',ic:'\u{1F3A4}',nm:'음성 내레이션',ds:'목소리만 사용'},{id:'text',ic:'\u{1F4DD}',nm:'자막 중심',ds:'텍스트로 전달'},{id:'product',ic:'\u{1F4E6}',nm:'제품/소재만',ds:'인물 없이 소재 중심'}];
+const ELEMS=['비포/애프터','사용법 시연','가격/혜택','고객 후기','비교 분석','전문가 의견','데이터/통계','Behind the scenes','Q&A','이벤트/프로모션'];
+
+const STEP_NAMES=['레퍼런스','참고 기준','기본 설정','스타일','핵심 내용','아이디어','기획안','스토리보드','이미지'];
+const TOTAL=9;
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+const S={
+  step:0,
+  // Step 0
+  refs:[],topic:'',
+  // Step 1 (reference criteria)
+  refMode:null, selections:{}, hookDepth:'element', expandedCard:null, extDone:false,
+  panelOpt:null, panelCat:null, custNote:'', activeRec:null,
+  // Steps 2-4
+  platform:null,goal:null,audience:null,mood:null,length:null,presenter:null,
+  message:'',elements:[],extra:'',
+  // Step 5
+  selIdea:null,
+  // Step 6
+  revs:0,revMsgs:[],
+  // Step 8
+  genDone:false,
+};
+CATS.forEach(c=>{S.selections[c.id]=c.type==='multi'?[]:false;});
+
+const $=id=>document.getElementById(id);
+
+// ═══════════════════════════════════════
+// PROGRESS BAR
+// ═══════════════════════════════════════
+function renderProg(){
+  let h='';
+  for(let i=0;i<TOTAL;i++){
+    const d=i<S.step?'ok':i===S.step?'on':'';
+    h+=`<div class="prog-s"><div class="prog-dot ${d}">${i<S.step?'&#10003;':i+1}</div><span class="prog-lbl ${d}">${STEP_NAMES[i]}</span></div>`;
+    if(i<TOTAL-1)h+=`<div class="prog-line ${i<S.step?'ok':''}"></div>`;
+  }
+  $('progBar').innerHTML=h;
+}
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+function showStep(n){
+  S.step=n;
+  document.querySelectorAll('.stp').forEach((p,i)=>p.classList.toggle('on',i===n));
+  renderProg();
+  updNav();
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(n===1)initStep1();
+  if(n===5)loadIdeas();
+  if(n===6)loadPlan();
+  if(n===7)loadSB();
+  if(n===8)loadImgGen();
+}
+function goBack(){if(S.step>0)showStep(S.step-1)}
+function goNext(){if(S.step<TOTAL-1)showStep(S.step+1)}
+
+function canGo(){
+  switch(S.step){
+    case 0:return S.refs.length>0&&S.topic.trim().length>0;
+    case 1:return S.refMode==='all'||getTotalSel()>0;
+    case 2:return S.platform&&S.goal&&S.audience;
+    case 3:return S.mood&&S.length&&S.presenter;
+    case 4:return true;
+    case 5:return S.selIdea!==null;
+    case 6:return true;
+    case 7:return true;
+    default:return false;
+  }
+}
+
+function updNav(){
+  $('bkBtn').style.display=S.step===0?'none':'';
+  $('nxBtn').style.display=S.step===8?'none':'';
+  $('nxBtn').disabled=!canGo();
+  const txts=[
+    ()=>{const r=S.refs.length;return r?`<strong>${r}개 레퍼런스</strong> 선택됨`:'레퍼런스와 주제를 입력해주세요'},
+    ()=>{if(S.refMode==='all')return '<strong>전체 참고</strong> · 모든 요소';const t=getTotalSel();return t>0?`<strong>${t}개 항목</strong> 선택됨`:'참고 기준을 선택해주세요'},
+    ()=>{const c=[S.platform,S.goal,S.audience].filter(Boolean).length;return `${c}/3 항목 선택됨`},
+    ()=>{const c=[S.mood,S.length,S.presenter].filter(Boolean).length;return `${c}/3 항목 선택됨`},
+    ()=>'핵심 내용 입력',
+    ()=>S.selIdea!==null?`<strong>아이디어 ${S.selIdea+1}</strong> 선택됨`:'아이디어를 선택해주세요',
+    ()=>`기획안 완성 · <strong>${S.revs}회 수정</strong>`,
+    ()=>'스토리보드 완성',
+    ()=>S.genDone?'이미지 생성 완료':'이미지 생성 중...',
+  ];
+  $('navInfo').innerHTML=txts[S.step]();
+  const btnTxts=['다음','다음','다음','다음','아이디어 생성','다음','스토리보드 만들기','이미지 생성',''];
+  $('nxBtn').textContent=btnTxts[S.step];
+}
+
+function gn(arr,id){return arr.find(x=>x.id===id)?.nm||''}
+
+// ═══════════════════════════════════════
+// STEP 0: Reference Selection
+// ═══════════════════════════════════════
+function renderRefs(){
+  $('refGrid').innerHTML=REFS.map(r=>`
+    <div class="rc ${S.refs.includes(r.id)?'on':''}" onclick="tglRef('${r.id}')">
+      <div class="rt" style="background:${r.grad}">
+        <div class="rck">&#10003;</div><div class="pi"><span>&#9654;</span></div><div class="dur">${r.dur}</div>
+      </div>
+      <div class="ri"><div class="rn">${r.title}</div><div class="rm">${r.ch}</div></div>
+    </div>`).join('');
+}
+function tglRef(id){const i=S.refs.indexOf(id);if(i>-1)S.refs.splice(i,1);else S.refs.push(id);renderRefs();updNav()}
+function onTopicInput(){S.topic=$('topicInput').value;$('topicCount').textContent=S.topic.length;updNav()}
+
+// ═══════════════════════════════════════
+// STEP 1: Reference Criteria
+// ═══════════════════════════════════════
+let extInterval=null;
+function initStep1(){
+  // Start extraction
+  $('extProg').classList.remove('hidden');
+  S.extDone=false;
+  let prog=0;
+  if(extInterval)clearInterval(extInterval);
+  extInterval=setInterval(()=>{
+    prog+=Math.random()*15+5;
+    if(prog>=100){prog=100;clearInterval(extInterval);setTimeout(()=>{$('extProg').classList.add('hidden');S.extDone=true},400)}
+    $('extFill').style.width=prog+'%';
+  },500);
+  renderRecs();
+  renderCats();
+}
+
+// Recommendation combinations
+function renderRecs(){
+  const topic=S.topic||'영상';
+  const recs=[
+    {id:0,name:'바이럴 중심 조합',reason:`"${topic}" 주제에서 댓글·공유를 유도하는 바이럴 중심 조합입니다.`,tags:['훅: 질문형, 트렌드','바이럴: 공감, 참여유도','영상 템포','CTA']},
+    {id:1,name:'정보 전달 조합',reason:`핵심 정보를 효과적으로 전달하는 교육형 구성입니다.`,tags:['훅: 도발, 비주얼','구도: 클로즈업, 탑다운','전개 방식','CTA']},
+    {id:2,name:'감성 브랜딩 조합',reason:`브랜드 이미지를 감성적으로 전달하는 구성입니다.`,tags:['훅: 감정, 비주얼','구도: 와이드, 동적무빙','영상 템포','전개 방식']},
+  ];
+  $('recCards').innerHTML=recs.map(r=>`
+    <div class="rec-card ${S.activeRec===r.id?'on':''}" onclick="applyRec(${r.id})">
+      <div class="rec-name">${r.name}</div>
+      <div class="rec-reason">${r.reason}</div>
+      <div class="rec-tags">${r.tags.map(t=>`<span class="rec-tag">${t}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+function applyRec(id){
+  // Reset first
+  CATS.forEach(c=>{S.selections[c.id]=c.type==='multi'?[]:false});
+  S.activeRec=id;
+  const presets=[
+    {hook:['hook-question','hook-trend'],tempo:false,composition:[],structure:false,viral:['viral-empathy','viral-engage'],cta:true},
+    {hook:['hook-provoke','hook-visual'],tempo:false,composition:['comp-closeup','comp-topdown'],structure:true,viral:[],cta:true},
+    {hook:['hook-emotion','hook-visual'],tempo:true,composition:['comp-wide','comp-dynamic'],structure:true,viral:[],cta:false},
+  ];
+  const p=presets[id];
+  Object.keys(p).forEach(k=>{S.selections[k]=p[k]});
+  S.refMode='custom';
+  $('modeAll').classList.remove('on');$('modeCustom').classList.add('on');
+  $('custSec').classList.add('vis');$('noteSec').classList.remove('hid');
+  $('recCustom').style.display='none';
+  renderRecs();renderCats();updNav();
+}
+
+// Mode selection
+function setRefMode(mode){
+  if(mode==='all'&&S.refMode==='custom'&&getTotalSel()>0){
+    showModal('전체 참고로 변경','세부 선택한 내용이 초기화됩니다. 변경하시겠습니까?',()=>doSetRefMode('all'));return;
+  }
+  doSetRefMode(mode);
+}
+function doSetRefMode(mode){
+  S.refMode=mode;S.activeRec=null;
+  $('modeAll').classList.toggle('on',mode==='all');
+  $('modeCustom').classList.toggle('on',mode==='custom');
+  $('custSec').classList.toggle('vis',mode==='custom');
+  $('noteSec').classList.remove('hid');
+  $('recCustom').style.display='none';
+  if(mode==='all'){
+    CATS.forEach(c=>{S.selections[c.id]=c.type==='multi'?c.opts.map(o=>o.id):true});
+    renderRecs();renderCats();
+  }else{
+    CATS.forEach(c=>{S.selections[c.id]=c.type==='multi'?[]:false});
+    renderCats();
+  }
+  updNav();
+}
+
+// Category Cards
+function renderCats(){
+  $('catCards').innerHTML=CATS.map(c=>c.type==='multi'?renderMulti(c):renderToggle(c)).join('');
+  // Check if matches a rec
+  checkRecMatch();
+}
+function renderMulti(c){
+  const exp=S.expandedCard===c.id,cnt=S.selections[c.id].length,sn=getSelNames(c.id);
+  return `<div class="cat-card multi ${exp?'exp':''} ${cnt?'has-sel':''}" data-cat="${c.id}">
+    <div class="ch" onclick="tglCard('${c.id}')">
+      <div class="ci ${c.cls}">${c.icon}</div>
+      <div class="c-info"><div class="c-nm">${c.name}</div><div class="c-ds">${c.desc}</div></div>
+      <span class="c-cnt ${cnt?'vis':''}">${cnt}개</span>
+      <svg class="c-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    ${!exp&&sn.length?`<div class="c-stags">${sn.map(n=>`<span class="stag">${n}</span>`).join('')}</div>`:''}
+    <div class="cb"><div class="cb-in">
+      ${c.hasDepth?`<div class="dep-ctrl">
+        <button class="dep-opt ${S.hookDepth==='element'?'on':''}" onclick="event.stopPropagation();setDep('element')">요소만 참고</button>
+        <button class="dep-opt ${S.hookDepth==='content'?'on':''}" onclick="event.stopPropagation();setDep('content')">내용까지 참고</button>
+      </div>`:''}
+      <div class="opts">${c.opts.map(o=>{
+        const sel=S.selections[c.id].includes(o.id),sp=c.hasDepth&&S.hookDepth==='content'&&o.cp;
+        return `<div class="oi ${sel?'on':''}" onclick="selMulti('${c.id}','${o.id}')">
+          <div class="o-ck">&#10003;</div>
+          <div class="o-co"><div class="o-nm">${o.name}</div><div class="o-ds">${o.desc}</div>${sp?`<div class="inl-sum">${o.cp}</div>`:''}</div>
+          <button class="det-btn" onclick="event.stopPropagation();openDet('${c.id}','${o.id}')">자세히</button>
+        </div>`;
+      }).join('')}</div>
+    </div></div>
+  </div>`;
+}
+function renderToggle(c){
+  const on=S.selections[c.id];
+  return `<div class="cat-card tgl ${on?'sel':''}" data-cat="${c.id}">
+    <div class="ch" onclick="tglItem('${c.id}')">
+      <div class="ci ${c.cls}">${c.icon}</div>
+      <div class="c-info"><div class="c-nm">${c.name}</div><div class="c-ds">${c.desc}</div></div>
+      <button class="tgl-det" onclick="event.stopPropagation();openDet('${c.id}',null)">자세히</button>
+      <div class="tgl-sw ${on?'on':''}" onclick="event.stopPropagation();tglItem('${c.id}')"></div>
+    </div>
+  </div>`;
+}
+
+function tglCard(id){S.expandedCard=S.expandedCard===id?null:id;renderCats();if(S.expandedCard)setTimeout(()=>document.querySelector(`[data-cat="${id}"]`)?.scrollIntoView({behavior:'smooth',block:'start'}),50)}
+function selMulti(catId,optId){const a=S.selections[catId],i=a.indexOf(optId);if(i>-1)a.splice(i,1);else a.push(optId);S.activeRec=null;renderCats();updNav()}
+function tglItem(catId){S.selections[catId]=!S.selections[catId];S.activeRec=null;renderCats();updNav()}
+function setDep(d){S.hookDepth=d;renderCats();showToast(d==='element'?'요소만 참고로 설정됨':'내용까지 참고로 설정됨')}
+function onNoteInput(){S.custNote=$('custNote').value;$('noteCount').textContent=S.custNote.length}
+function getSelNames(catId){const c=CATS.find(x=>x.id===catId);if(c.type==='toggle')return S.selections[catId]?[c.name]:[];return S.selections[catId].map(id=>c.opts.find(o=>o.id===id)?.name).filter(Boolean)}
+function getTotalSel(){let t=0;CATS.forEach(c=>{if(c.type==='multi')t+=S.selections[c.id].length;else if(S.selections[c.id])t++});return t}
+function checkRecMatch(){
+  // If selections exactly match a preset, highlight it
+  $('recCustom').style.display=(S.refMode==='custom'&&S.activeRec===null&&getTotalSel()>0)?'block':'none';
+}
+
+// Side Panel
+function openDet(catId,optId){
+  const cat=CATS.find(c=>c.id===catId);if(!cat)return;
+  S.panelCat=catId;S.panelOpt=optId;
+  const isTgl=cat.type==='toggle';
+  const isSel=isTgl?S.selections[catId]:S.selections[catId].includes(optId);
+  const title=isTgl?cat.name:cat.opts.find(o=>o.id===optId)?.name;
+  $('spTitle').textContent=title;
+  $('spTgl').textContent=isSel?'선택 해제하기':'이 항목 선택하기';
+  $('spTgl').className='sp-tgl'+(isSel?' sel':'');
+  $('spNav').style.display=isTgl?'none':'flex';
+  if(!isTgl){const idx=cat.opts.findIndex(o=>o.id===optId);$('spPrev').disabled=idx<=0;$('spNext').disabled=idx>=cat.opts.length-1}
+  const ts=['0:00~0:03','0:03~0:07','0:07~0:12','0:12~0:18'][Math.floor(Math.random()*4)];
+  const refMap={'hook-question':'영상 시작 3초에 "이거 진짜 효과 있을까?"라는 자막과 함께 호기심을 유발합니다.','hook-surprise':'예상치 못한 결과를 먼저 보여주고 과정을 역추적하는 구성입니다.','hook-trend':'현재 유행하는 밈/사운드를 활용한 진입 방식입니다.','hook-emotion':'감정적으로 공감할 수 있는 상황을 제시하여 몰입을 유도합니다.','hook-provoke':'"이것도 모르면 손해"와 같은 도발적 문구로 반응을 유도합니다.','hook-visual':'강렬한 색감, 빠른 줌인 등 시각적 충격으로 스크롤을 멈추게 합니다.','tempo':'평균 1.5초 간격의 빠른 컷 전환으로 높은 에너지를 유지합니다.','structure':'"문제 제기 → 해결 과정 → 결과" 3단 구조를 사용합니다.','cta':'마지막 3초에서 자막+음성으로 CTA를 이중 전달합니다.'};
+  const refKey=isTgl?catId:optId;
+  $('spBody').innerHTML=`<div class="sp-sec"><div class="sp-st">레퍼런스 영상 구간</div><div class="ts-badge">\u23F1 ${ts}</div><div class="vid-prev">구간 프리뷰</div></div><div class="sp-sec"><div class="sp-st">참고 요소</div><p class="an-text">${refMap[refKey]||'레퍼런스 영상에서 해당 요소가 어떻게 활용되었는지 확인하세요.'}</p></div>`;
+  $('overlay').classList.add('on');$('sPanel').classList.add('on');
+}
+function closePanel(){$('overlay').classList.remove('on');$('sPanel').classList.remove('on')}
+function navPanel(dir){const cat=CATS.find(c=>c.id===S.panelCat);if(!cat||cat.type==='toggle')return;const idx=cat.opts.findIndex(o=>o.id===S.panelOpt)+dir;if(idx>=0&&idx<cat.opts.length)openDet(cat.id,cat.opts[idx].id)}
+$('overlay').onclick=closePanel;$('spClose').onclick=closePanel;
+$('spPrev').onclick=()=>navPanel(-1);$('spNext').onclick=()=>navPanel(1);
+$('spTgl').onclick=()=>{
+  const cat=CATS.find(c=>c.id===S.panelCat);
+  if(cat.type==='toggle'){tglItem(S.panelCat);const on=S.selections[S.panelCat];$('spTgl').textContent=on?'선택 해제하기':'이 항목 선택하기';$('spTgl').className='sp-tgl'+(on?' sel':'')}
+  else{selMulti(S.panelCat,S.panelOpt);const on=S.selections[S.panelCat].includes(S.panelOpt);$('spTgl').textContent=on?'선택 해제하기':'이 옵션 선택하기';$('spTgl').className='sp-tgl'+(on?' sel':'')}
+};
+
+// ═══════════════════════════════════════
+// STEPS 2-4: Questions
+// ═══════════════════════════════════════
+function renderSel(cid,items,key,cols){
+  $(cid).className='sc c'+cols;
+  $(cid).innerHTML=items.map(it=>`<div class="sci ${S[key]===it.id?'on':''}" onclick="pickCard('${key}','${it.id}','${cid}',${cols})"><div class="ck">&#10003;</div><div class="ic">${it.ic}</div><div class="nm">${it.nm}</div><div class="ds">${it.ds}</div></div>`).join('');
+}
+function pickCard(key,val,cid,cols){S[key]=S[key]===val?null:val;const map={platform:PLATS,goal:GOALS,audience:AUDS,mood:MOODS,length:LENS,presenter:PRES};renderSel(cid,map[key],key,cols);updNav()}
+function renderElems(){$('elemChips').innerHTML=ELEMS.map(e=>`<div class="cp ${S.elements.includes(e)?'on':''}" onclick="tglElem('${e}')">${e}</div>`).join('')}
+function tglElem(n){const i=S.elements.indexOf(n);if(i>-1)S.elements.splice(i,1);else S.elements.push(n);renderElems()}
+function updCC(iid,cid){$(cid).textContent=$(iid).value.length;if(iid==='msgInput')S.message=$(iid).value;if(iid==='extInput')S.extra=$(iid).value}
+
+// ═══════════════════════════════════════
+// STEP 5: Ideas
+// ═══════════════════════════════════════
+let IDEAS=[];
+function getIdeas(){
+  const t=S.topic||'영상',m=gn(MOODS,S.mood)||'캐주얼',g=gn(GOALS,S.goal)||'홍보',p=gn(PLATS,S.platform)||'Instagram',l=gn(LENS,S.length)||'30초';
+  // Use reference selections to tailor ideas
+  const hasHook=S.selections.hook?.length>0,hasViral=S.selections.viral?.length>0;
+  return [
+    {ti:`"진짜 효과 있을까?" ${t} 솔직 리뷰`,sm:`시청자의 궁금증을 자극하는 질문형 훅으로 시작해, ${t}의 실제 사용 과정과 비포/애프터를 보여주는 구성입니다. ${m} 톤으로 신뢰감을 줍니다.`,tags:[{l:'질문형 훅',c:'hook'},{l:m,c:'tone'},{l:'비포/애프터',c:'structure'},{l:'솔직 리뷰',c:'style'}],str:`<strong>오프닝 (0~3초):</strong> 궁금증 유발 자막 + 결과 프리뷰<br><strong>본문:</strong> 사용 과정 + 리액션<br><strong>클로징:</strong> 비포/애프터 + CTA`},
+    {ti:`${t} 3가지 포인트 정리`,sm:`핵심 정보를 숫자로 정리해 전달하는 구성입니다. 빠른 템포와 볼드 자막으로 정보 밀도를 높이고 저장을 유도합니다.`,tags:[{l:'정보 밀도',c:'viral'},{l:'빠른 템포',c:'style'},{l:'넘버링',c:'structure'},{l:p,c:'tone'}],str:`<strong>오프닝:</strong> "${t}, 이것만 알면 됩니다"<br><strong>포인트 1~3:</strong> 핵심 장면 + 볼드 자막<br><strong>클로징:</strong> "저장해두세요" CTA`},
+    {ti:`하루 동안 ${t} 써봤습니다`,sm:`브이로그 형식으로 하루 동안의 경험을 자연스럽게 기록합니다. 광고 느낌 없이 자연스러운 ${g}이 가능합니다.`,tags:[{l:'브이로그',c:'style'},{l:'자연스러운',c:'tone'},{l:'사용 경험',c:'structure'},{l:'공감 포인트',c:'viral'}],str:`<strong>모닝 루틴:</strong> 자연스러운 도입<br><strong>사용 장면:</strong> 실제 사용 + 감상<br><strong>결과:</strong> 솔직한 평가`},
+    {ti:`이거 모르면 손해! ${t} 꿀팁`,sm:`도발적인 훅으로 시선을 잡고, 시청자가 "몰랐던" 정보를 전달합니다. 댓글 유도 포맷으로 바이럴에 유리합니다.`,tags:[{l:'도발형 훅',c:'hook'},{l:'꿀팁',c:'viral'},{l:'댓글 유도',c:'cta'},{l:m,c:'tone'}],str:`<strong>훅:</strong> "이거 모르면 진짜 손해"<br><strong>꿀팁:</strong> 핵심 팁 시연<br><strong>반전/결과:</strong> "어떻게 생각해요?"`},
+    {ti:`${t} A vs B 비교 실험`,sm:`두 가지 옵션을 직접 비교하는 실험형 콘텐츠입니다. 시청자가 결과를 예측하며 끝까지 시청하게 만드는 구조입니다.`,tags:[{l:'비교 실험',c:'structure'},{l:'서프라이즈',c:'hook'},{l:'시청 완료율',c:'viral'},{l:'객관적',c:'tone'}],str:`<strong>오프닝:</strong> "과연 어떤 게 더 좋을까?"<br><strong>비교:</strong> A vs B 동시 시연<br><strong>결과:</strong> 데이터 비교 + 결론`}
+  ];
+}
+function loadIdeas(){
+  S.selIdea=null;$('idLoad').classList.remove('hid');$('idCon').classList.add('hid');$('altArea').classList.add('hid');
+  setTimeout(()=>{IDEAS=getIdeas();renderIdeas();$('idLoad').classList.add('hid');$('idCon').classList.remove('hid');$('altArea').classList.remove('hid');updNav()},2000);
+}
+function renderIdeas(){
+  $('idCon').innerHTML=IDEAS.map((d,i)=>`<div class="id-card ${S.selIdea===i?'on':''}" onclick="pickIdea(${i})">
+    <div class="id-ck">&#10003;</div><div class="id-num">아이디어 ${i+1}</div><div class="id-ti">${d.ti}</div><div class="id-sm">${d.sm}</div>
+    <div class="id-tags">${d.tags.map(t=>`<span class="id-tag ${t.c}">${t.l}</span>`).join('')}</div>
+    <div class="id-str">${d.str}</div></div>`).join('');
+}
+function pickIdea(i){S.selIdea=S.selIdea===i?null:i;renderIdeas();updNav()}
+function reqAlt(){const v=$('altIn').value.trim();if(!v)return;$('altIn').value='';S.selIdea=null;$('idLoad').classList.remove('hid');$('idCon').classList.add('hid');$('altArea').classList.add('hid');
+  setTimeout(()=>{IDEAS=getIdeas().map((d,i)=>({...d,ti:d.ti+' (수정)',sm:`[${v}] 방향으로 재기획: `+d.sm}));renderIdeas();$('idLoad').classList.add('hid');$('idCon').classList.remove('hid');$('altArea').classList.remove('hid');updNav()},1800)}
+
+// ═══════════════════════════════════════
+// STEP 6: Plan
+// ═══════════════════════════════════════
+function loadPlan(){
+  const idea=IDEAS[S.selIdea]||IDEAS[0],t=S.topic||'영상',m=gn(MOODS,S.mood)||'캐주얼',p=gn(PLATS,S.platform)||'Instagram',l=gn(LENS,S.length)||'30초',pr=gn(PRES,S.presenter)||'얼굴 출연';
+  // Incorporate reference selections
+  const refSummary=[];
+  CATS.forEach(c=>{if(c.type==='multi'&&S.selections[c.id].length>0){refSummary.push(`${c.name}: ${getSelNames(c.id).join(', ')}`)}else if(c.type==='toggle'&&S.selections[c.id]){refSummary.push(c.name)}});
+  $('planCon').innerHTML=`<div class="pl-box">
+    <div class="pl-st">영상 개요</div><div class="pl-tx"><strong>${idea.ti}</strong><br>${idea.sm}</div>
+    <div class="pl-st">기본 정보</div><div class="pl-tx"><ul><li><strong>플랫폼:</strong> ${p}</li><li><strong>길이:</strong> ${l}</li><li><strong>톤:</strong> ${m}</li><li><strong>출연:</strong> ${pr}</li><li><strong>타겟:</strong> ${gn(AUDS,S.audience)||'전체'}</li></ul></div>
+    ${refSummary.length?`<div class="pl-st">레퍼런스 참고 요소</div><div class="pl-tx"><ul>${refSummary.map(r=>`<li>${r}</li>`).join('')}</ul></div>`:''}
+    <div class="pl-st">시간별 구성</div>
+    <div class="pl-tr"><div class="pl-tm">0:00~0:03</div><div class="pl-td"><strong>[오프닝/훅]</strong> 시선을 사로잡는 첫 장면. 궁금증 유발 자막과 결과 프리뷰.</div></div>
+    <div class="pl-tr"><div class="pl-tm">0:03~0:08</div><div class="pl-td"><strong>[도입]</strong> "${t}" 주제 소개와 맥락 설정.</div></div>
+    <div class="pl-tr"><div class="pl-tm">0:08~0:20</div><div class="pl-td"><strong>[본문]</strong> ${S.elements.length?S.elements.slice(0,3).join(', ')+' 등 활용하여':'실제 사용/시연 장면으로'} 핵심 정보 전달.</div></div>
+    <div class="pl-tr"><div class="pl-tm">0:20~0:25</div><div class="pl-td"><strong>[결과]</strong> 핵심 결과를 시각적으로 보여줌. 볼드 자막 강조.</div></div>
+    <div class="pl-tr"><div class="pl-tm">0:25~0:30</div><div class="pl-td"><strong>[CTA]</strong> 자연스러운 행동 유도, 댓글/팔로우 유도.</div></div>
+    <div class="pl-st">촬영/편집 가이드</div><div class="pl-tx"><ul><li>조명: 자연광 또는 링라이트 (${m} 분위기)</li><li>카메라: 스마트폰 세로 촬영 (${p} 최적화)</li><li>편집: 빠른 컷 전환, 볼드 자막, 트렌디한 전환 효과</li><li>사운드: 트렌디한 BGM + 주요 포인트 효과음</li></ul></div>
+  </div>`;
+  S.revs=0;S.revMsgs=[];$('revHist').innerHTML='';$('revCnt').textContent='0회 수정됨';
+}
+function submitRev(){const v=$('revIn').value.trim();if(!v)return;$('revIn').value='';S.revs++;
+  $('revHist').innerHTML+=`<div class="rev-msg u">${v}</div>`;
+  setTimeout(()=>{const rs=['오프닝 훅을 더 임팩트 있게 변경하고, 전체 톤을 조정했습니다.','요청하신 방향으로 본문 구성과 CTA를 재구성했습니다.','시간 배분과 촬영 가이드를 업데이트했습니다.','핵심 메시지와 편집 방향을 조정했습니다.'];
+  $('revHist').innerHTML+=`<div class="rev-msg a">${rs[Math.min(S.revs-1,rs.length-1)]}</div>`;$('revCnt').textContent=S.revs+'회 수정됨';$('revHist').scrollTop=$('revHist').scrollHeight;updNav()},1000)}
+
+// ═══════════════════════════════════════
+// STEP 7: Storyboard
+// ═══════════════════════════════════════
+const SB_CUTS=[
+  {cut:1,time:'0:00~0:03',scene:'오프닝 훅',cam:'클로즈업 + 줌인',desc:'화면에 제품이 가까이 보이다가 빠르게 줌아웃',sub:'"이거 진짜 효과 있을까?"',grad:'linear-gradient(135deg,#667eea,#764ba2)'},
+  {cut:2,time:'0:03~0:06',scene:'주제 도입',cam:'미디엄샷',desc:'카메라를 보며 주제를 소개, 자연스러운 톤',sub:'"오늘 직접 써보고 솔직하게 알려드릴게요"',grad:'linear-gradient(135deg,#f093fb,#f5576c)'},
+  {cut:3,time:'0:06~0:10',scene:'사용 전 상태',cam:'클로즈업',desc:'사용 전 상태를 클로즈업으로 보여줌',sub:'Before 자막 + 상태 설명',grad:'linear-gradient(135deg,#4facfe,#00f2fe)'},
+  {cut:4,time:'0:10~0:16',scene:'사용 과정',cam:'POV + 클로즈업',desc:'실제 사용 모습을 다양한 앵글로 촬영, 교차 편집',sub:'"텍스처가 진짜 가볍고..."',grad:'linear-gradient(135deg,#43e97b,#38f9d7)'},
+  {cut:5,time:'0:16~0:22',scene:'핵심 포인트',cam:'미디엄 + 자막',desc:'3가지 핵심 포인트를 넘버링 자막과 빠르게 전달',sub:'POINT 1, 2, 3 볼드 자막',grad:'linear-gradient(135deg,#fa709a,#fee140)'},
+  {cut:6,time:'0:22~0:26',scene:'결과/비교',cam:'와이드 + 클로즈업',desc:'비포/애프터를 화면 분할로 비교',sub:'After 자막 + 결과 강조',grad:'linear-gradient(135deg,#a18cd1,#fbc2eb)'},
+  {cut:7,time:'0:26~0:30',scene:'CTA/마무리',cam:'미디엄샷',desc:'자연스러운 행동 유도, 자막+음성 CTA',sub:'"궁금한 거 댓글로 물어보세요!"',grad:'linear-gradient(135deg,#ffecd2,#fcb69f)'},
+];
+function loadSB(){$('sbTL').innerHTML=SB_CUTS.map(c=>`<div class="sb-c"><div class="sb-dot"></div><div class="sb-cc"><div class="sb-ch"><span class="sb-cn">CUT ${c.cut}</span><span class="sb-ct">${c.time}</span><span class="sb-cam">${c.cam}</span></div><div class="sb-bd"><div class="sb-vis" style="background:${c.grad}">Scene ${c.cut}<span class="gb">미리보기</span></div><div class="sb-co"><div class="sb-sn">${c.scene}</div><div class="sb-ds">${c.desc}</div>${c.sub?`<div class="sb-sub">${c.sub}</div>`:''}</div></div></div></div>`).join('')}
+
+// ═══════════════════════════════════════
+// STEP 8: Image Generation
+// ═══════════════════════════════════════
+function loadImgGen(){
+  S.genDone=false;const total=SB_CUTS.length;let gen=0;
+  $('gnP').classList.remove('hid');$('gnDone').classList.add('hid');$('gnPC').textContent=`0 / ${total}`;$('gnPF').style.width='0%';
+  $('gnG').innerHTML=SB_CUTS.map((c,i)=>`<div class="gn-i" id="gi${i}"><div class="gn-im" style="background:${c.grad}"><div class="st" id="gs${i}"><div class="spinner" style="width:22px;height:22px;border-width:3px"></div></div></div><div class="gn-inf"><div class="gn-cn">CUT ${c.cut} · ${c.time}</div><div class="gn-ds">${c.scene}</div><div class="gn-ac hid" id="ga${i}"><button class="gn-ab">재생성</button><button class="gn-ab">다운로드</button></div></div></div>`).join('');
+  function genNext(){if(gen>=total){S.genDone=true;$('gnP').classList.add('hid');$('gnDone').classList.remove('hid');updNav();return}
+    setTimeout(()=>{$(`gs${gen}`).innerHTML='&#10003;';$(`gs${gen}`).className='st ok';$(`ga${gen}`).classList.remove('hid');gen++;$('gnPC').textContent=`${gen} / ${total}`;$('gnPF').style.width=`${gen/total*100}%`;genNext()},700+Math.random()*500)}
+  setTimeout(genNext,400);
+}
+
+// ═══════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════
+function showToast(m){$('toast').textContent=m;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2000)}
+function showModal(ti,ds,fn){$('moTi').textContent=ti;$('moDs').textContent=ds;$('modal').classList.add('on');$('moCC').onclick=()=>$('modal').classList.remove('on');$('moCF').onclick=()=>{$('modal').classList.remove('on');fn()}}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePanel();$('modal').classList.remove('on')}});
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+function init(){
+  renderRefs();
+  renderSel('platCards',PLATS,'platform',3);renderSel('goalCards',GOALS,'goal',2);renderSel('audCards',AUDS,'audience',3);
+  renderSel('moodCards',MOODS,'mood',3);renderSel('lenCards',LENS,'length',3);renderSel('presCards',PRES,'presenter',2);
+  renderElems();showStep(0);
+}
+init();
+</script>
+</body>
+</html>
