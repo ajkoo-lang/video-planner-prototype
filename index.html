@@ -328,6 +328,77 @@ body{font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;background
 .sec-sub{font-size:13px;color:var(--t2);margin-top:-6px;margin-bottom:12px;line-height:1.5}
 .hid{display:none!important}
 .mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}
+
+/* Reference Analysis Tags */
+.ref-an-tags{display:none;flex-wrap:wrap;gap:4px;margin-top:6px}
+.rc.on .ref-an-tags{display:flex}
+.ref-an-tag{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600}
+.ref-an-tag.hook{background:#FFF3E0;color:#E65100}
+.ref-an-tag.dev{background:#E3F2FD;color:#1565C0}
+.ref-an-tag.cta-t{background:#FCE4EC;color:#C62828}
+
+/* Pattern Selectors */
+.pat-sec{margin-bottom:16px}
+.pat-hd{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.pat-lbl{font-size:14px;font-weight:700}
+.pat-auto{font-size:11px;background:var(--ok);color:#fff;padding:2px 7px;border-radius:4px;font-weight:600}
+.pat-chips{display:flex;flex-wrap:wrap;gap:6px}
+.pat-chip{padding:7px 14px;border-radius:18px;border:1.5px solid var(--bdr);background:var(--card);font-size:12px;font-weight:600;cursor:pointer;transition:all var(--tr);user-select:none}
+.pat-chip:hover{border-color:var(--pri-l);background:var(--pri-bg)}
+.pat-chip.on{border-color:var(--pri);background:var(--pri);color:#fff}
+
+/* AI Script Section */
+.ai-sec{background:linear-gradient(135deg,#f0eeff,#e8f0ff);border-radius:var(--r);overflow:hidden;margin-bottom:18px}
+.ai-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;user-select:none}
+.ai-hdr:active{background:rgba(0,0,0,.03)}
+.ai-hdr-l{display:flex;align-items:center;gap:8px}
+.ai-hdr-t{font-size:14px;font-weight:700}
+.ai-hdr-ic{transition:transform var(--tr);color:var(--t3);font-size:12px}
+.ai-sec.exp .ai-hdr-ic{transform:rotate(180deg)}
+.ai-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.ai-sec.exp .ai-body{max-height:800px}
+.ai-body-in{padding:0 18px 18px}
+.ai-txt{background:var(--card);border-radius:var(--rs);padding:14px;font-size:13px;line-height:1.8;white-space:pre-line;font-family:'Pretendard',monospace;color:var(--t1);margin-bottom:12px}
+.ai-acts{display:flex;gap:8px}
+.ai-btn{flex:1;padding:10px;border-radius:var(--rs);font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all var(--tr);display:flex;align-items:center;justify-content:center;gap:5px}
+.ai-btn.copy{background:var(--card);color:var(--t1)}.ai-btn.copy:hover{background:var(--chip)}
+.ai-btn.apply{background:var(--pri);color:#fff}.ai-btn.apply:hover{background:var(--pri-h)}
+.ai-hint{text-align:center;font-size:11px;color:var(--t3);margin-top:8px}
+
+/* Enhanced Storyboard Details */
+.sb-det{padding:10px 14px;border-top:1px solid var(--bdr);background:var(--chip)}
+.sb-det-row{display:flex;gap:8px;margin-bottom:5px;font-size:12px;line-height:1.5}
+.sb-det-row:last-child{margin-bottom:0}
+.sb-det-lbl{font-weight:700;color:var(--pri);min-width:50px;flex-shrink:0}
+.sb-det-val{color:var(--t2);flex:1}
+.sb-dial{background:var(--card);border-radius:5px;padding:6px 10px;font-size:12px;color:var(--t1);border-left:3px solid var(--pri-l);line-height:1.5}
+.sb-notes{font-size:11px;color:var(--t3);font-style:italic}
+
+/* Publishing Step */
+.pub-sec{margin-bottom:20px}
+.pub-lbl{font-size:12px;font-weight:700;color:var(--t2);margin-bottom:8px}
+.pub-upload{border:2px dashed var(--bdr);border-radius:var(--r);padding:40px 20px;text-align:center;cursor:pointer;transition:all var(--tr)}
+.pub-upload:active{border-color:var(--pri-l);background:var(--pri-bg)}
+.pub-upload.done{border-style:solid;border-color:var(--ok);background:#E8F8F0}
+.pub-upload .up-ic{font-size:32px;margin-bottom:8px}
+.pub-upload .up-tx{font-size:14px;color:var(--t2)}.pub-upload .up-h{font-size:12px;color:var(--t3);margin-top:4px}
+.pub-plats{display:flex;flex-wrap:wrap;gap:8px}
+.pub-plat{display:flex;align-items:center;gap:8px;padding:12px 18px;border:2px solid var(--bdr);border-radius:var(--r);cursor:pointer;transition:all var(--tr);background:var(--card);min-width:130px}
+.pub-plat:hover{border-color:var(--pri-l)}.pub-plat.on{border-color:var(--pri);background:var(--pri-bg)}
+.pub-plat .pp-ic{font-size:20px}.pub-plat .pp-nm{font-size:13px;font-weight:600}.pub-plat .pp-ds{font-size:11px;color:var(--t3)}
+.pub-plat.on .pp-ds{color:var(--pri)}
+.pub-plat .pp-ck{width:20px;height:20px;border-radius:50%;border:2px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;margin-left:auto;transition:all var(--tr)}
+.pub-plat.on .pp-ck{background:var(--pri);border-color:var(--pri);color:#fff}
+.pub-simul{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--chip);border-radius:var(--r);cursor:pointer}
+.pub-simul-l{display:flex;align-items:center;gap:10px}
+.pub-simul-tx{font-size:13px;font-weight:600}.pub-simul-ds{font-size:11px;color:var(--t3)}
+.pub-mode{display:flex;background:var(--chip);border-radius:var(--r);padding:4px;gap:4px}
+.pub-mode-btn{flex:1;padding:10px;border:none;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;transition:all var(--tr);background:transparent;color:var(--t2)}
+.pub-mode-btn.on{background:var(--card);color:var(--t1);box-shadow:var(--sh)}
+.pub-done{text-align:center;padding:40px 20px;background:var(--card);border-radius:var(--r);margin-top:20px}
+.pub-plan-link{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--pri-bg);border:1px solid rgba(108,92,231,.2);border-radius:var(--r)}
+.pub-plan-link .pp-ic{font-size:16px;color:var(--pri)}.pub-plan-link .pp-info{flex:1}
+.pub-plan-link .pp-nm{font-size:13px;font-weight:600;color:var(--t1)}.pub-plan-link .pp-ds{font-size:11px;color:var(--pri)}
 </style>
 </head>
 <body>
@@ -343,6 +414,7 @@ body{font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;background
   <div class="qg">
     <div class="ql">레퍼런스 영상 선택 <span class="badge">필수</span></div>
     <div class="rg" id="refGrid"></div>
+    <div id="refAnalysis" class="hid" style="margin-top:12px"></div>
   </div>
   <div class="qg">
     <div class="ql">영상 주제 <span class="badge">필수</span></div>
@@ -445,6 +517,37 @@ body{font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;background
 <div class="stp" id="step5">
   <div class="pg-t">상세 기획안</div>
   <div class="pg-s">선택한 아이디어를 기반으로 구체적인 기획안입니다.</div>
+
+  <!-- Pattern Selectors -->
+  <div class="pat-sec" id="patHookSec">
+    <div class="pat-hd"><span class="pat-lbl">&#127919; 후킹 패턴</span><span class="pat-auto hid" id="patAutoTag">AI 추천</span></div>
+    <div class="pat-chips" id="hookPatChips"></div>
+  </div>
+  <div class="pat-sec" id="patDevSec">
+    <div class="pat-hd"><span class="pat-lbl">&#128208; 전개 패턴</span></div>
+    <div class="pat-chips" id="devPatChips"></div>
+  </div>
+  <div class="pat-sec" id="patCtaSec">
+    <div class="pat-hd"><span class="pat-lbl">&#128226; CTA 패턴</span></div>
+    <div class="pat-chips" id="ctaPatChips"></div>
+  </div>
+
+  <!-- AI Script -->
+  <div class="ai-sec exp hid" id="aiSec">
+    <div class="ai-hdr" onclick="tglAiScript()">
+      <div class="ai-hdr-l"><span>&#10024;</span><span class="ai-hdr-t">AI 스크립트 초안</span></div>
+      <span class="ai-hdr-ic">&#9660;</span>
+    </div>
+    <div class="ai-body"><div class="ai-body-in">
+      <div class="ai-txt" id="aiScriptTxt"></div>
+      <div class="ai-acts">
+        <button class="ai-btn copy" onclick="copyAiScript()">&#128203; 복사하기</button>
+        <button class="ai-btn apply" onclick="applyAiScript()">&#10024; 메모에 추가</button>
+      </div>
+      <div class="ai-hint">패턴을 선택하면 더 구체적인 스크립트가 생성됩니다</div>
+    </div></div>
+  </div>
+
   <div id="planCon"></div>
   <div class="rev-area" id="revArea">
     <div class="rev-ti">수정 요청 <span class="rev-cnt" id="revCnt">0회 수정됨</span></div>
@@ -470,6 +573,75 @@ body{font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;background
     <div style="font-size:36px;margin-bottom:10px;color:var(--ok)">&#10003;</div>
     <div style="font-size:16px;font-weight:700;margin-bottom:4px">모든 이미지가 생성되었습니다</div>
     <div style="font-size:13px;color:var(--t2)">스토리보드와 함께 활용하세요</div>
+  </div>
+</div>
+
+<!-- STEP 8: Publishing -->
+<div class="stp" id="step8">
+  <div class="pg-t">게시하기</div>
+  <div class="pg-s">완성된 영상을 플랫폼에 게시하세요.</div>
+
+  <div class="pub-sec">
+    <div class="pub-lbl">영상 파일</div>
+    <div class="pub-upload" id="pubUpload" onclick="pubUploadTap()">
+      <div class="up-ic">&#128228;</div>
+      <div class="up-tx" id="pubUpTx">탭하여 영상 선택</div>
+      <div class="up-h" id="pubUpH">MP4, MOV (최대 500MB)</div>
+    </div>
+  </div>
+
+  <div class="pub-sec">
+    <div class="pub-lbl">제목 *</div>
+    <input class="ti" id="pubTitleIn" placeholder="영상 제목을 입력하세요" oninput="onPubInput()">
+  </div>
+
+  <div class="pub-sec">
+    <div class="pub-lbl">설명 / 캡션</div>
+    <textarea class="ti" id="pubCaptionIn" rows="3" placeholder="영상 설명이나 해시태그를 입력하세요" oninput="onPubInput()"></textarea>
+  </div>
+
+  <div class="pub-sec">
+    <div class="pub-lbl">연결된 기획안</div>
+    <div class="pub-plan-link">
+      <span class="pp-ic">&#128196;</span>
+      <div class="pp-info"><div class="pp-nm" id="pubPlanNm">-</div><div class="pp-ds" id="pubPlanDs">기획안 자동 연결</div></div>
+    </div>
+  </div>
+
+  <div class="pub-sec">
+    <div class="pub-lbl">게시 플랫폼</div>
+    <div class="pub-plats" id="pubPlatforms"></div>
+  </div>
+
+  <div class="pub-sec hid" id="pubSimulSec">
+    <div class="pub-simul" onclick="tglPubSimul()">
+      <div class="pub-simul-l">
+        <span style="font-size:20px">&#9889;</span>
+        <div><div class="pub-simul-tx">동시 업로드</div><div class="pub-simul-ds" id="pubSimulDs">선택한 플랫폼에 한 번에 게시</div></div>
+      </div>
+      <div class="tgl-sw" id="pubSimulTgl"></div>
+    </div>
+  </div>
+
+  <div class="pub-sec">
+    <div class="pub-lbl">게시 방식</div>
+    <div class="pub-mode">
+      <button class="pub-mode-btn on" id="pubModeInstant" onclick="setPubMode('instant')">즉시 게시</button>
+      <button class="pub-mode-btn" id="pubModeScheduled" onclick="setPubMode('scheduled')">예약 게시</button>
+    </div>
+  </div>
+
+  <div class="pub-sec hid" id="pubDateSec">
+    <div class="pub-lbl">예약 시간</div>
+    <input type="datetime-local" class="ti" id="pubDateIn" oninput="onPubInput()">
+  </div>
+
+  <button class="nb nx" style="width:100%;padding:16px;font-size:16px;border-radius:12px;margin-top:12px" onclick="handlePublish()" id="pubSubmitBtn">게시하기</button>
+
+  <div class="pub-done hid" id="pubDone">
+    <div style="font-size:48px;margin-bottom:12px">&#127881;</div>
+    <div style="font-size:18px;font-weight:800;margin-bottom:6px">게시가 완료되었습니다!</div>
+    <div style="font-size:14px;color:var(--t2)" id="pubDoneMsg">영상이 성공적으로 업로드되었어요.</div>
   </div>
 </div>
 
@@ -513,10 +685,14 @@ body{font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;background
 <script>
 // ═══ DATA ═══
 const REFS=[
-  {id:'r1',title:'스킨케어 루틴 리뷰',ch:'@skincarelab',dur:'0:34',grad:'linear-gradient(135deg,#667eea,#764ba2)'},
-  {id:'r2',title:'카페 브이로그',ch:'@cafedaily',dur:'0:45',grad:'linear-gradient(135deg,#f093fb,#f5576c)'},
-  {id:'r3',title:'운동 챌린지 영상',ch:'@fitlife',dur:'0:28',grad:'linear-gradient(135deg,#4facfe,#00f2fe)'},
-  {id:'r4',title:'제품 언박싱',ch:'@unboxkorea',dur:'0:52',grad:'linear-gradient(135deg,#43e97b,#38f9d7)'},
+  {id:'r1',title:'스킨케어 루틴 리뷰',ch:'@skincarelab',dur:'0:34',grad:'linear-gradient(135deg,#667eea,#764ba2)',
+   analysis:{hook:'공감 독백',dev:'스텝 바이 스텝',cta:'저장 유도',summary:'공감형 도입 후 단계별 루틴 소개, 저장 유도로 마무리'}},
+  {id:'r2',title:'카페 브이로그',ch:'@cafedaily',dur:'0:45',grad:'linear-gradient(135deg,#f093fb,#f5576c)',
+   analysis:{hook:'시각 충격',dev:'브이로그',cta:'팔로우 유도',summary:'감성적 비주얼로 시선 고정, 일상 기록 형식, 팔로우 유도'}},
+  {id:'r3',title:'운동 챌린지 영상',ch:'@fitlife',dur:'0:28',grad:'linear-gradient(135deg,#4facfe,#00f2fe)',
+   analysis:{hook:'도발적 주장',dev:'비포 애프터',cta:'댓글 유도',summary:'도발적 훅으로 시작, 비포/애프터 결과 강조, 댓글 참여 유도'}},
+  {id:'r4',title:'제품 언박싱',ch:'@unboxkorea',dur:'0:52',grad:'linear-gradient(135deg,#43e97b,#38f9d7)',
+   analysis:{hook:'미스터리',dev:'리스트업',cta:'다음편 예고',summary:'궁금증 유발 후 하나씩 공개, 시리즈 예고로 재방문 유도'}},
 ];
 
 const CATS=[
@@ -560,8 +736,16 @@ const LENS=[{id:'15s',ic:'\u26A1',nm:'15초 이하',ds:'초숏폼'},{id:'30s',ic
 const PRES=[{id:'face',ic:'\u{1F464}',nm:'얼굴 출연',ds:'직접 나와서 진행'},{id:'voice',ic:'\u{1F3A4}',nm:'음성 내레이션',ds:'목소리만 사용'},{id:'text',ic:'\u{1F4DD}',nm:'자막 중심',ds:'텍스트로 전달'},{id:'product',ic:'\u{1F4E6}',nm:'제품/소재만',ds:'인물 없이 소재 중심'}];
 const ELEMS=['비포/애프터','사용법 시연','가격/혜택','고객 후기','비교 분석','전문가 의견','데이터/통계','Behind the scenes','Q&A','이벤트/프로모션'];
 
-const STEP_NAMES=['레퍼런스','참고 기준','영상 설정','핵심 내용','아이디어','기획안','스토리보드','이미지'];
-const TOTAL=8;
+// ShortShock 3-Axis Pattern Types
+const HOOK_PATS=['반전 질문','숫자 제시','시각 충격','공감 독백','비밀 공개','도발적 주장','상황극','비교 대조','타임라인','미스터리'];
+const DEV_PATS=['스텝 바이 스텝','비포 애프터','스토리텔링','리스트업','인터뷰','브이로그','리액션','교육/설명'];
+const CTA_PATS=['댓글 유도','팔로우 유도','저장 유도','공유 유도','다음편 예고','링크 유도'];
+
+// Publishing Platforms
+const PUB_PLATS=[{id:'instagram',ic:'\u{1F4F1}',nm:'Instagram Reels'},{id:'youtube',ic:'\u25B6',nm:'YouTube Shorts'},{id:'tiktok',ic:'\u{1F3B5}',nm:'TikTok'}];
+
+const STEP_NAMES=['레퍼런스','참고 기준','영상 설정','핵심 내용','아이디어','기획안','스토리보드','이미지','게시'];
+const TOTAL=9;
 
 // ═══ STATE ═══
 const S={
@@ -583,6 +767,18 @@ const S={
   // Dynamic plan/storyboard data
   planData:null,
   sbCuts:[],
+  // Pattern selections (ShortShock 3-axis)
+  hookingPat:'',
+  devPat:'',
+  ctaPat:'',
+  patsInited:false,
+  // Publishing
+  pubVideo:null,
+  pubPlatforms:[],
+  pubMode:'instant',
+  pubDate:'',
+  pubSimul:false,
+  pubDone:false,
 };
 CATS.forEach(c=>{S.selections[c.id]=c.type==='multi'?[]:false;});
 
@@ -608,9 +804,10 @@ function showStep(n){
   if(n===1&&!S.step1Inited)initStep1();
   if(n===4&&!S.ideasLoaded)loadIdeas();
   if(n===4)renderSummary();
-  if(n===5&&!S.planLoaded)loadPlan();
+  if(n===5){if(!S.patsInited)initPatterns();if(!S.planLoaded)loadPlan();}
   if(n===6&&!S.sbLoaded)loadSB();
   if(n===7&&!S.imgLoaded)loadImgGen();
+  if(n===8)initPublish();
 }
 function goBack(){if(S.step>0)showStep(S.step-1)}
 function goNext(){if(S.step<TOTAL-1)showStep(S.step+1)}
@@ -624,13 +821,14 @@ function canGo(){
     case 4:return S.selIdea!==null;
     case 5:return true;
     case 6:return true;
+    case 7:return true;
     default:return false;
   }
 }
 
 function updNav(){
   $('bkBtn').style.display=S.step===0?'none':'';
-  $('nxBtn').style.display=S.step===7?'none':'';
+  $('nxBtn').style.display=S.step===8?'none':'';
   $('nxBtn').disabled=!canGo();
   const txts=[
     ()=>{const r=S.refs.length;return r?`<strong>${r}개 레퍼런스</strong> 선택됨`:'레퍼런스와 주제를 입력해주세요'},
@@ -638,12 +836,13 @@ function updNav(){
     ()=>{const c=[S.platform,S.goal,S.audience,S.mood,S.length,S.presenter].filter(Boolean).length;return `${c}/6 항목 선택됨`},
     ()=>'핵심 내용 입력',
     ()=>S.selIdea!==null?`<strong>아이디어 ${S.selIdea+1}</strong> 선택됨`:'아이디어를 선택해주세요',
-    ()=>`기획안 완성 · <strong>${S.revs}회 수정</strong>`,
+    ()=>{const p=[S.hookingPat,S.devPat,S.ctaPat].filter(Boolean).length;return `기획안 완성 · <strong>패턴 ${p}/3</strong> · ${S.revs}회 수정`},
     ()=>'스토리보드 완성',
     ()=>S.genDone?'이미지 생성 완료':'이미지 생성 중...',
+    ()=>{const pc=S.pubPlatforms.length;return pc?`<strong>${pc}개 플랫폼</strong> 선택됨`:'게시 설정'},
   ];
   $('navInfo').innerHTML=txts[S.step]();
-  const btnTxts=['다음','다음','다음','아이디어 생성','다음','스토리보드 만들기','이미지 생성',''];
+  const btnTxts=['다음','다음','다음','아이디어 생성','다음','스토리보드 만들기','이미지 생성','다음',''];
   $('nxBtn').textContent=btnTxts[S.step];
 }
 
@@ -654,10 +853,16 @@ function renderRefs(){
   $('refGrid').innerHTML=REFS.map(r=>`
     <div class="rc ${S.refs.includes(r.id)?'on':''}" onclick="tglRef('${r.id}')">
       <div class="rt" style="background:${r.grad}"><div class="rck">&#10003;</div><div class="pi"><span>&#9654;</span></div><div class="dur">${r.dur}</div></div>
-      <div class="ri"><div class="rn">${r.title}</div><div class="rm">${r.ch}</div></div>
+      <div class="ri"><div class="rn">${r.title}</div><div class="rm">${r.ch}</div>
+        ${r.analysis?`<div class="ref-an-tags">
+          <span class="ref-an-tag hook">후킹: ${r.analysis.hook}</span>
+          <span class="ref-an-tag dev">전개: ${r.analysis.dev}</span>
+          <span class="ref-an-tag cta-t">CTA: ${r.analysis.cta}</span>
+        </div>`:''}</div>
     </div>`).join('');
+  renderRefAnalysis();
 }
-function tglRef(id){const i=S.refs.indexOf(id);if(i>-1)S.refs.splice(i,1);else S.refs.push(id);renderRefs();updNav()}
+function tglRef(id){const i=S.refs.indexOf(id);if(i>-1)S.refs.splice(i,1);else S.refs.push(id);S.patsInited=false;renderRefs();updNav()}
 function onTopicInput(){S.topic=$('topicInput').value;$('topicCount').textContent=S.topic.length;updNav()}
 
 // ═══ STEP 1: Reference Criteria ═══
@@ -987,13 +1192,16 @@ function loadPlan(){
 
 function renderPlan(){
   const d=S.planData;if(!d)return;
+  const patInfo=[S.hookingPat?`후킹: ${S.hookingPat}`:null,S.devPat?`전개: ${S.devPat}`:null,S.ctaPat?`CTA: ${S.ctaPat}`:null].filter(Boolean);
   $('planCon').innerHTML=`<div class="pl-box">
     <div class="pl-st">영상 개요</div><div class="pl-tx"><strong>${d.idea.ti}</strong><br>${d.idea.sm}</div>
     <div class="pl-st">기본 정보</div><div class="pl-tx"><ul><li><strong>플랫폼:</strong> ${d.info.platform}</li><li><strong>길이:</strong> ${d.info.length}</li><li><strong>톤:</strong> ${d.info.mood}</li><li><strong>출연:</strong> ${d.info.presenter}</li><li><strong>타겟:</strong> ${d.info.audience}</li></ul></div>
+    ${patInfo.length?`<div class="pl-st">3축 패턴 구조</div><div class="pl-tx"><ul>${patInfo.map(p=>`<li>${p}</li>`).join('')}</ul></div>`:''}
     ${d.refSummary.length?`<div class="pl-st">레퍼런스 참고 요소</div><div class="pl-tx"><ul>${d.refSummary.map(r=>`<li>${r}</li>`).join('')}</ul></div>`:''}
     <div class="pl-st">시간별 구성 (${d.info.length})</div>
     ${d.timeline.map(t=>`<div class="pl-tr"><div class="pl-tm">${t.time}</div><div class="pl-td"><strong>[${t.label}]</strong> ${t.desc}</div></div>`).join('')}
     <div class="pl-st">촬영/편집 가이드</div><div class="pl-tx"><ul><li><strong>조명:</strong> ${d.guide.lighting}</li><li><strong>카메라:</strong> ${d.guide.camera}</li><li><strong>편집:</strong> ${d.guide.editing}</li><li><strong>사운드:</strong> ${d.guide.sound}</li></ul></div>
+    ${d.memo?`<div class="pl-st">메모</div><div class="pl-tx" style="white-space:pre-line;font-size:13px;background:var(--chip);padding:12px;border-radius:var(--rs)">${d.memo}</div>`:''}
   </div>`;
 }
 
@@ -1055,18 +1263,72 @@ const CAMS=['클로즈업 + 줌인','미디엄샷','클로즈업','POV + 클로�
 function loadSB(){
   if(!S.planData)return;
   const tl=S.planData.timeline;
-  // Build storyboard cuts from plan timeline
+  const total=tl.length;
+  const topic=S.topic||'영상';
+  const pr=S.presenter||'face';
   const compSel=getSelNames('composition');
-  S.sbCuts=tl.map((t,i)=>({
-    cut:i+1,
-    time:t.time,
-    scene:t.label,
-    cam:compSel[i%compSel.length]||CAMS[i%CAMS.length],
-    desc:t.desc.replace(/\[수정\].*?(반영|재구성)\. /,''),
-    sub:t.sub||'',
-    grad:GRADS[i%GRADS.length]
-  }));
-  $('sbTL').innerHTML=S.sbCuts.map(c=>`<div class="sb-c"><div class="sb-dot"></div><div class="sb-cc"><div class="sb-ch"><span class="sb-cn">CUT ${c.cut}</span><span class="sb-ct">${c.time}</span><span class="sb-cam">${c.cam}</span></div><div class="sb-bd"><div class="sb-vis" style="background:${c.grad}">Scene ${c.cut}<span class="gb">미리보기</span></div><div class="sb-co"><div class="sb-sn">${c.scene}</div><div class="sb-ds">${c.desc}</div>${c.sub?`<div class="sb-sub">${c.sub}</div>`:''}</div></div></div></div>`).join('');
+
+  // Enhanced camera angles based on scene position
+  const camTemplates={
+    first:['클로즈업 → 얼굴 리액션','빠른 줌인 + 미스터리 앵글','오버숄더 → 클로즈업'],
+    intro:['미디엄샷 + 자막 오버레이','핸드헬드 팔로우','와이드 → 핸드헬드'],
+    body:['탑뷰 + 사이드 앵글','45도 앵글 + 인서트컷','스크린 녹화 + PIP','미디엄샷 + 리액션 컷'],
+    result:['정면 미디엄샷 (토크)','화면 분할 비교','모션그래픽 + 정면 토크'],
+    last:['정면 클로즈업 (친근한 눈높이)','정면 미디엄 + 밝은 조명'],
+  };
+
+  S.sbCuts=tl.map((t,i)=>{
+    const isFirst=i===0,isLast=i===total-1,isSecond=i===1,isPreLast=i===total-2;
+    const camPool=isFirst?camTemplates.first:isLast?camTemplates.last:isSecond?camTemplates.intro:isPreLast?camTemplates.result:camTemplates.body;
+    const cam=compSel[i%compSel.length]||camPool[i%camPool.length]||CAMS[i%CAMS.length];
+
+    // Direction intent
+    let direction='';
+    if(isFirst)direction=`강렬한 첫인상으로 시선 고정. ${S.hookingPat?S.hookingPat+' 기법 적용. ':''}3초 안에 핵심 전달.`;
+    else if(isLast)direction=`카메라를 직접 보며 행동 유도. ${S.ctaPat||'CTA'} 자막 + 아이콘 애니메이션.`;
+    else if(isSecond)direction=`"${topic}" 주제를 자연스럽게 소개. 배경 B-roll 또는 관련 이미지 오버레이.`;
+    else if(isPreLast)direction='핵심 내용을 시각적으로 정리. 요약 자막 또는 인포그래픽 활용.';
+    else direction=`핵심 콘텐츠를 밀도 있게 전달. ${S.devPat?S.devPat+' 구조 적용. ':''}빠른 컷 전환과 볼드 자막으로 집중도 유지.`;
+
+    // Subtitle
+    let subtitle='';
+    if(isFirst)subtitle=`"${topic}${S.hookingPat==='반전 질문'?'... 진짜?':S.hookingPat==='숫자 제시'?', 딱 3가지만!':S.hookingPat==='도발적 주장'?'? 전부 틀렸습니다':'... 이거 실화?'}"`;
+    else if(isLast)subtitle=`"${S.ctaPat==='댓글 유도'?'여러분 생각은? 댓글로!':S.ctaPat==='팔로우 유도'?'더 보고 싶으면 팔로우!':S.ctaPat==='저장 유도'?'나중에 써먹을 사람, 저장!':'다음 영상도 기대해주세요!'}"`;
+    else if(t.sub)subtitle=`"${t.sub}"`;
+
+    // Dialogue
+    let dialogue='';
+    if(pr==='text')dialogue='(자막 중심 — 내레이션 없음)';
+    else if(isFirst)dialogue=pr==='face'?`(카메라 응시) 여러분, ${topic} 알고 계시죠?`:`(내레이션) ${topic}에 대해 알려드릴게요.`;
+    else if(isLast)dialogue=pr==='face'?'(웃으며) 도움이 됐으면 좋겠어요!':`(내레이션) 더 자세한 내용은 다음 영상에서!`;
+    else{const short=t.desc.replace(/\[수정\].*?(반영|재구성)\. /,'').slice(0,35);dialogue=pr==='face'?`(설명) ${short}...`:`(내레이션) ${short}...`}
+
+    // Notes
+    let notes='';
+    if(isFirst)notes='텍스트 오버레이 + 효과음으로 임팩트 극대화';
+    else if(isLast)notes=S.ctaPat==='댓글 유도'?'댓글 아이콘 + 화살표 애니메이션':S.ctaPat==='저장 유도'?'저장 버튼 애니메이션':'구독/알림 버튼 가리키기';
+    else if(i===Math.floor(total/2))notes='클라이맥스 구간 — BGM 볼륨업 + 슬로우모션 고려';
+
+    return {
+      cut:i+1,time:t.time,scene:t.label,cam,
+      desc:t.desc.replace(/\[수정\].*?(반영|재구성)\. /,''),
+      sub:t.sub||'',direction,subtitle,dialogue,notes,
+      grad:GRADS[i%GRADS.length]
+    };
+  });
+
+  $('sbTL').innerHTML=S.sbCuts.map(c=>`<div class="sb-c"><div class="sb-dot"></div><div class="sb-cc">
+    <div class="sb-ch"><span class="sb-cn">CUT ${c.cut}</span><span class="sb-ct">${c.time}</span><span class="sb-cam">${c.cam}</span></div>
+    <div class="sb-bd"><div class="sb-vis" style="background:${c.grad}">Scene ${c.cut}<span class="gb">미리보기</span></div>
+      <div class="sb-co"><div class="sb-sn">${c.scene}</div><div class="sb-ds">${c.desc}</div>${c.sub?`<div class="sb-sub">${c.sub}</div>`:''}</div></div>
+    <div class="sb-det">
+      <div class="sb-det-row"><span class="sb-det-lbl">구도</span><span class="sb-det-val">${c.cam}</span></div>
+      <div class="sb-det-row"><span class="sb-det-lbl">연출</span><span class="sb-det-val">${c.direction}</span></div>
+      ${c.subtitle?`<div class="sb-det-row"><span class="sb-det-lbl">자막</span><span class="sb-det-val">${c.subtitle}</span></div>`:''}
+      ${c.dialogue?`<div class="sb-dial">${c.dialogue}</div>`:''}
+      ${c.notes?`<div class="sb-notes">${c.notes}</div>`:''}
+    </div>
+  </div></div>`).join('');
   S.sbLoaded=true;
 }
 
@@ -1080,6 +1342,206 @@ function loadImgGen(){
   function genNext(){if(gen>=total){S.genDone=true;S.imgLoaded=true;$('gnP').classList.add('hid');$('gnDone').classList.remove('hid');updNav();return}
     setTimeout(()=>{$(`gs${gen}`).innerHTML='&#10003;';$(`gs${gen}`).className='st ok';$(`ga${gen}`).classList.remove('hid');gen++;$('gnPC').textContent=`${gen} / ${total}`;$('gnPF').style.width=`${gen/total*100}%`;genNext()},700+Math.random()*500)}
   setTimeout(genNext,400);
+}
+
+// ═══ REFERENCE ANALYSIS DISPLAY ═══
+function renderRefAnalysis(){
+  if(S.refs.length===0){$('refAnalysis').classList.add('hid');return}
+  const selected=S.refs.map(id=>REFS.find(r=>r.id===id)).filter(r=>r&&r.analysis);
+  if(!selected.length){$('refAnalysis').classList.add('hid');return}
+  $('refAnalysis').classList.remove('hid');
+  $('refAnalysis').innerHTML=selected.map(r=>`
+    <div style="background:var(--card);border:1.5px solid var(--bdr);border-radius:var(--r);padding:14px;margin-bottom:8px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+        <span style="font-size:16px">&#128270;</span> ${r.title} 분석
+      </div>
+      <div style="font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:8px">${r.analysis.summary}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">
+        <span class="ref-an-tag hook">후킹: ${r.analysis.hook}</span>
+        <span class="ref-an-tag dev">전개: ${r.analysis.dev}</span>
+        <span class="ref-an-tag cta-t">CTA: ${r.analysis.cta}</span>
+      </div>
+    </div>`).join('');
+}
+
+// ═══ PATTERN SELECTORS (ShortShock 3-Axis) ═══
+function initPatterns(){
+  // Auto-fill from reference analysis if available
+  if(!S.hookingPat&&!S.devPat&&!S.ctaPat){
+    const firstRef=S.refs.length?REFS.find(r=>r.id===S.refs[0]):null;
+    if(firstRef&&firstRef.analysis){
+      S.hookingPat=firstRef.analysis.hook;
+      S.devPat=firstRef.analysis.dev;
+      S.ctaPat=firstRef.analysis.cta;
+      $('patAutoTag').classList.remove('hid');
+    }
+  }
+  S.patsInited=true;
+  renderPatterns();
+  updateAiScript();
+}
+
+function renderPatterns(){
+  $('hookPatChips').innerHTML=HOOK_PATS.map(p=>`<div class="pat-chip ${S.hookingPat===p?'on':''}" onclick="pickPat('hook','${p}')">${p}</div>`).join('');
+  $('devPatChips').innerHTML=DEV_PATS.map(p=>`<div class="pat-chip ${S.devPat===p?'on':''}" onclick="pickPat('dev','${p}')">${p}</div>`).join('');
+  $('ctaPatChips').innerHTML=CTA_PATS.map(p=>`<div class="pat-chip ${S.ctaPat===p?'on':''}" onclick="pickPat('cta','${p}')">${p}</div>`).join('');
+}
+
+function pickPat(axis,val){
+  $('patAutoTag').classList.add('hid');
+  if(axis==='hook')S.hookingPat=S.hookingPat===val?'':val;
+  else if(axis==='dev')S.devPat=S.devPat===val?'':val;
+  else S.ctaPat=S.ctaPat===val?'':val;
+  renderPatterns();updateAiScript();updNav();
+  // Reset downstream storyboard
+  S.sbLoaded=false;S.imgLoaded=false;
+}
+
+// ═══ AI SCRIPT GENERATION ═══
+function generateScript(){
+  const t=S.topic||'영상';
+  if(!S.hookingPat&&!S.devPat&&!S.ctaPat)return null;
+  const hookMap={
+    '반전 질문':`"${t}... 진짜 이게 가능하다고?" [충격 표정 클로즈업]`,
+    '숫자 제시':`"${t}, 딱 3가지만 알면 됩니다" [숫자 텍스트 오버레이]`,
+    '시각 충격':`[${t} 비포 장면] → [임팩트 있는 결과 장면] 0.5초 컷`,
+    '공감 독백':`"솔직히 ${t} 때문에 미치는 줄 알았는데..." [카메라 직접 응시]`,
+    '비밀 공개':`"${t}에 대해 아무도 안 알려주는 거 하나 알려줄게요" [속삭이듯]`,
+    '도발적 주장':`"${t}? 여러분 지금까지 전부 틀렸습니다" [단호한 표정]`,
+    '상황극':`[상황 재현] "${t}" 하는 순간 벌어지는 일...`,
+    '비교 대조':`"[A 방식] vs [B 방식] — ${t}의 결과가 이렇게 다릅니다"`,
+    '타임라인':`"Day 1 → Day 30 ${t} 변화 과정" [타임랩스]`,
+    '미스터리':`"${t}... 이거 왜 아무도 모르죠?" [의문 표정]`,
+  };
+  const devMap={
+    '스텝 바이 스텝':'Step 1: [첫 번째 핵심] → Step 2: [두 번째 핵심] → Step 3: [결과/완성]',
+    '비포 애프터':'Before: [문제 상황 보여주기] → 전환 효과 → After: [해결된 모습]',
+    '스토리텔링':'[배경 설명] → [갈등/문제] → [시도] → [결과/반전]',
+    '리스트업':'3위: [괜찮은 것] → 2위: [좋은 것] → 1위: [최고의 것] 카운트다운',
+    '인터뷰':'Q: [질문] → A: [핵심 답변] → [추가 인사이트]',
+    '브이로그':'[일상 장면] → [핵심 순간] → [감상/교훈]',
+    '리액션':'[원본 영상] → [리액션] → [분석/해설]',
+    '교육/설명':'[개념 설명] → [예시] → [실전 적용법] → [요약]',
+  };
+  const ctaMap={
+    '댓글 유도':'"이거 해본 사람? 댓글로 결과 알려주세요!"',
+    '팔로우 유도':'"이런 콘텐츠 더 보고 싶으면 팔로우!"',
+    '저장 유도':'"나중에 써먹으려면 저장해두세요!"',
+    '공유 유도':'"이거 꼭 알아야 할 친구 태그해주세요!"',
+    '다음편 예고':'"다음 편에서 진짜 충격적인 결과 공개합니다... 알림 켜놓으세요"',
+    '링크 유도':'"자세한 내용은 프로필 링크에서 확인하세요!"',
+  };
+  const parts=[];
+  if(S.hookingPat&&hookMap[S.hookingPat])parts.push('[후킹]\n'+hookMap[S.hookingPat]);
+  if(S.devPat&&devMap[S.devPat])parts.push('[전개]\n'+devMap[S.devPat]);
+  if(S.ctaPat&&ctaMap[S.ctaPat])parts.push('[CTA]\n'+ctaMap[S.ctaPat]);
+  return parts.length?parts.join('\n\n'):null;
+}
+
+function updateAiScript(){
+  const script=generateScript();
+  if(script){
+    $('aiSec').classList.remove('hid');
+    $('aiScriptTxt').textContent=script;
+  }else{
+    $('aiSec').classList.add('hid');
+  }
+}
+
+function tglAiScript(){$('aiSec').classList.toggle('exp')}
+
+function copyAiScript(){
+  const script=generateScript();
+  if(script){navigator.clipboard.writeText(script).catch(()=>{});showToast('스크립트가 클립보드에 복사되었어요!')}
+}
+
+function applyAiScript(){
+  const script=generateScript();
+  if(script&&S.planData){
+    const existing=S.planData.memo||'';
+    S.planData.memo=(existing?existing+'\n\n---\n\n':'')+'📝 AI 스크립트 초안:\n\n'+script;
+    showToast('기획안에 스크립트가 추가되었어요!');
+    renderPlan();
+  }
+}
+
+// ═══ PUBLISHING (Step 8) ═══
+function initPublish(){
+  // Pre-fill from plan data
+  const idea=IDEAS[S.selIdea];
+  if(idea&&!$('pubTitleIn').value){
+    $('pubTitleIn').value=idea.ti;
+    $('pubPlanNm').textContent=idea.ti;
+    $('pubPlanDs').textContent=[S.hookingPat,S.devPat,S.ctaPat].filter(Boolean).join(' + ')||'패턴 미선택';
+  }
+  renderPubPlats();
+  updNav();
+}
+
+function renderPubPlats(){
+  $('pubPlatforms').innerHTML=PUB_PLATS.map(p=>`
+    <div class="pub-plat ${S.pubPlatforms.includes(p.id)?'on':''}" onclick="tglPubPlat('${p.id}')">
+      <span class="pp-ic">${p.ic}</span>
+      <div><div class="pp-nm">${p.nm}</div></div>
+      <div class="pp-ck">&#10003;</div>
+    </div>`).join('');
+  // Show/hide simultaneous upload
+  if(S.pubPlatforms.length>=2){
+    $('pubSimulSec').classList.remove('hid');
+    $('pubSimulDs').textContent=`${S.pubPlatforms.length}개 플랫폼에 한 번에 게시`;
+  }else{
+    $('pubSimulSec').classList.add('hid');
+    S.pubSimul=false;
+  }
+  $('pubSimulTgl').className='tgl-sw'+(S.pubSimul?' on':'');
+}
+
+function tglPubPlat(id){
+  const i=S.pubPlatforms.indexOf(id);
+  if(i>-1)S.pubPlatforms.splice(i,1);else S.pubPlatforms.push(id);
+  renderPubPlats();updNav();
+}
+
+function tglPubSimul(){
+  S.pubSimul=!S.pubSimul;
+  $('pubSimulTgl').className='tgl-sw'+(S.pubSimul?' on':'');
+}
+
+function setPubMode(mode){
+  S.pubMode=mode;
+  $('pubModeInstant').className='pub-mode-btn'+(mode==='instant'?' on':'');
+  $('pubModeScheduled').className='pub-mode-btn'+(mode==='scheduled'?' on':'');
+  if(mode==='scheduled')$('pubDateSec').classList.remove('hid');
+  else $('pubDateSec').classList.add('hid');
+  // Update button text
+  $('pubSubmitBtn').textContent=mode==='scheduled'?'예약하기':'게시하기';
+}
+
+function pubUploadTap(){
+  S.pubVideo='my_video_'+Date.now()+'.mp4';
+  $('pubUpload').classList.add('done');
+  $('pubUpTx').textContent=S.pubVideo;
+  $('pubUpH').textContent='탭하여 변경';
+  showToast('영상이 선택되었어요!');
+}
+
+function onPubInput(){updNav()}
+
+function handlePublish(){
+  const title=$('pubTitleIn').value.trim();
+  if(!title){showToast('제목을 입력해주세요');return}
+  if(S.pubPlatforms.length===0){showToast('게시할 플랫폼을 선택해주세요');return}
+  if(S.pubMode==='scheduled'&&!$('pubDateIn').value){showToast('예약 시간을 설정해주세요');return}
+
+  S.pubDone=true;
+  const platNames=S.pubPlatforms.map(id=>PUB_PLATS.find(p=>p.id===id)?.nm).join(', ');
+  $('pubSubmitBtn').style.display='none';
+  $('pubDone').classList.remove('hid');
+  $('pubDoneMsg').textContent=S.pubMode==='scheduled'
+    ?`${platNames}에 예약 게시가 설정되었어요.`
+    :`${platNames}에 영상이 업로드되었어요.`;
+  showToast(S.pubMode==='scheduled'?'예약이 완료되었어요!':'게시가 완료되었어요!');
+  updNav();
 }
 
 // ═══ UTILITIES ═══
